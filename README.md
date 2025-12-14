@@ -3,6 +3,7 @@
 ShopEase is a beginner-level e-commerce application inspired by the Sapphire app.
 This project is created for academic learning purposes using Scrum methodology.
 
+
 ## Team Roles
 - Scrum Master: Fareeha Ahmed
 - Backend Developer: Ayesha Tariq
