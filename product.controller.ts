@@ -1,0 +1,1 @@
+import { searchProducts } from '../services/product.service';export const search=async(req:any,res:any)=>res.json(await searchProducts(req.query.q||''));

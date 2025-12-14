@@ -1,0 +1,1 @@
+import { prisma } from '../config/database';export const addToCart=(u:number,p:number,q:number)=>prisma.cart.create({data:{userId:u,productId:p,quantity:q}});

@@ -1,0 +1,1 @@
+import { prisma } from '../config/database';export const searchProducts=(q:string)=>prisma.product.findMany({where:{name:{contains:q,mode:'insensitive'}}});

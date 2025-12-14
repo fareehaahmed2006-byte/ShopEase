@@ -1,0 +1,1 @@
+import { addToCart } from '../services/cart.service';export const add=async(req:any,res:any)=>res.json(await addToCart(req.body.userId,req.body.productId,req.body.quantity));

@@ -1,0 +1,1 @@
+import { checkoutService } from '../services/order.service';export const checkout=async(req:any,res:any)=>res.json(await checkoutService(req.body.userId));
