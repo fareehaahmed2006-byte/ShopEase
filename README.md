@@ -1,40 +1,15 @@
-### A base TSConfig for working with Node 16.
+# Installation
+> `npm install --save @types/node`
 
-Add the package to your `"devDependencies"`:
+# Summary
+This package contains type definitions for node (https://nodejs.org/).
 
-```sh
-npm install --save-dev @tsconfig/node16
-yarn add --dev @tsconfig/node16
-```
+# Details
+Files were exported from https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/node.
 
-Add to your `tsconfig.json`:
+### Additional Details
+ * Last updated: Tue, 16 Dec 2025 21:35:18 GMT
+ * Dependencies: [undici-types](https://npmjs.com/package/undici-types)
 
-```json
-"extends": "@tsconfig/node16/tsconfig.json"
-```
-
----
-
-The `tsconfig.json`: 
-
-```jsonc
-{
-  "$schema": "https://json.schemastore.org/tsconfig",
-  "display": "Node 16",
-
-  "compilerOptions": {
-    "lib": ["es2021"],
-    "module": "Node16",
-    "target": "es2021",
-
-    "strict": true,
-    "esModuleInterop": true,
-    "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
-    "moduleResolution": "node"
-  }
-}
-
-```
-
-You can find the [code here](https://github.com/tsconfig/bases/blob/master/bases/node16.json).
+# Credits
+These definitions were written by [Microsoft TypeScript](https://github.com/Microsoft), [Alberto Schiabel](https://github.com/jkomyno), [Andrew Makarov](https://github.com/r3nya), [Benjamin Toueg](https://github.com/btoueg), [David Junger](https://github.com/touffy), [Mohsen Azimi](https://github.com/mohsen1), [Nikita Galkin](https://github.com/galkin), [Sebastian Silbermann](https://github.com/eps1lon), [Wilco Bakker](https://github.com/WilcoBakker), [Marcin Kopacz](https://github.com/chyzwar), [Trivikram Kamat](https://github.com/trivikr), [Junxiao Shi](https://github.com/yoursunny), [Ilia Baryshnikov](https://github.com/qwelias), [ExE Boss](https://github.com/ExE-Boss), [Piotr Błażejewicz](https://github.com/peterblazejewicz), [Anna Henningsen](https://github.com/addaleax), [Victor Perin](https://github.com/victorperin), [NodeJS Contributors](https://github.com/NodeJS), [Linus Unnebäck](https://github.com/LinusU), [wafuwafu13](https://github.com/wafuwafu13), [Matteo Collina](https://github.com/mcollina), [Dmitry Semigradsky](https://github.com/Semigradsky), [René](https://github.com/Renegade334), and [Yagiz Nizipli](https://github.com/anonrig).
