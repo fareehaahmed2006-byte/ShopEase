@@ -1,112 +1,50 @@
-# make-error
+# math-intrinsics <sup>[![Version Badge][npm-version-svg]][package-url]</sup>
 
-[![Package Version](https://badgen.net/npm/v/make-error)](https://npmjs.org/package/make-error) [![Build Status](https://travis-ci.org/JsCommunity/make-error.png?branch=master)](https://travis-ci.org/JsCommunity/make-error) [![PackagePhobia](https://badgen.net/packagephobia/install/make-error)](https://packagephobia.now.sh/result?p=make-error) [![Latest Commit](https://badgen.net/github/last-commit/JsCommunity/make-error)](https://github.com/JsCommunity/make-error/commits/master)
+[![github actions][actions-image]][actions-url]
+[![coverage][codecov-image]][codecov-url]
+[![License][license-image]][license-url]
+[![Downloads][downloads-image]][downloads-url]
 
-> Make your own error types!
+[![npm badge][npm-badge-png]][package-url]
 
-## Features
+ES Math-related intrinsics and helpers, robustly cached.
 
-- Compatible Node & browsers
-- `instanceof` support
-- `error.name` & `error.stack` support
-- compatible with [CSP](https://en.wikipedia.org/wiki/Content_Security_Policy) (i.e. no `eval()`)
+ - `abs`
+ - `floor`
+ - `isFinite`
+ - `isInteger`
+ - `isNaN`
+ - `isNegativeZero`
+ - `max`
+ - `min`
+ - `mod`
+ - `pow`
+ - `round`
+ - `sign`
+ - `constants/maxArrayLength`
+ - `constants/maxSafeInteger`
+ - `constants/maxValue`
 
-## Installation
 
-### Node & [Browserify](http://browserify.org/)/[Webpack](https://webpack.js.org/)
+## Tests
+Simply clone the repo, `npm install`, and run `npm test`
 
-Installation of the [npm package](https://npmjs.org/package/make-error):
+## Security
 
-```
-> npm install --save make-error
-```
+Please email [@ljharb](https://github.com/ljharb) or see https://tidelift.com/security if you have a potential security vulnerability to report.
 
-Then require the package:
-
-```javascript
-var makeError = require("make-error");
-```
-
-### Browser
-
-You can directly use the build provided at [unpkg.com](https://unpkg.com):
-
-```html
-<script src="https://unpkg.com/make-error@1/dist/make-error.js"></script>
-```
-
-## Usage
-
-### Basic named error
-
-```javascript
-var CustomError = makeError("CustomError");
-
-// Parameters are forwarded to the super class (here Error).
-throw new CustomError("a message");
-```
-
-### Advanced error class
-
-```javascript
-function CustomError(customValue) {
-  CustomError.super.call(this, "custom error message");
-
-  this.customValue = customValue;
-}
-makeError(CustomError);
-
-// Feel free to extend the prototype.
-CustomError.prototype.myMethod = function CustomError$myMethod() {
-  console.log("CustomError.myMethod (%s, %s)", this.code, this.message);
-};
-
-//-----
-
-try {
-  throw new CustomError(42);
-} catch (error) {
-  error.myMethod();
-}
-```
-
-### Specialized error
-
-```javascript
-var SpecializedError = makeError("SpecializedError", CustomError);
-
-throw new SpecializedError(42);
-```
-
-### Inheritance
-
-> Best for ES2015+.
-
-```javascript
-import { BaseError } from "make-error";
-
-class CustomError extends BaseError {
-  constructor() {
-    super("custom error message");
-  }
-}
-```
-
-## Related
-
-- [make-error-cause](https://www.npmjs.com/package/make-error-cause): Make your own error types, with a cause!
-
-## Contributions
-
-Contributions are _very_ welcomed, either on the documentation or on
-the code.
-
-You may:
-
-- report any [issue](https://github.com/JsCommunity/make-error/issues)
-  you've encountered;
-- fork and create a pull request.
-
-## License
-
-ISC © [Julien Fontanet](http://julien.isonoe.net)
+[package-url]: https://npmjs.org/package/math-intrinsics
+[npm-version-svg]: https://versionbadg.es/es-shims/math-intrinsics.svg
+[deps-svg]: https://david-dm.org/es-shims/math-intrinsics.svg
+[deps-url]: https://david-dm.org/es-shims/math-intrinsics
+[dev-deps-svg]: https://david-dm.org/es-shims/math-intrinsics/dev-status.svg
+[dev-deps-url]: https://david-dm.org/es-shims/math-intrinsics#info=devDependencies
+[npm-badge-png]: https://nodei.co/npm/math-intrinsics.png?downloads=true&stars=true
+[license-image]: https://img.shields.io/npm/l/math-intrinsics.svg
+[license-url]: LICENSE
+[downloads-image]: https://img.shields.io/npm/dm/es-object.svg
+[downloads-url]: https://npm-stat.com/charts.html?package=math-intrinsics
+[codecov-image]: https://codecov.io/gh/es-shims/math-intrinsics/branch/main/graphs/badge.svg
+[codecov-url]: https://app.codecov.io/gh/es-shims/math-intrinsics/
+[actions-image]: https://img.shields.io/endpoint?url=https://github-actions-badge-u3jn4tfpocch.runkit.sh/es-shims/math-intrinsics
+[actions-url]: https://github.com/es-shims/math-intrinsics/actions
