@@ -1,24 +1,47 @@
-/*---------------------------------------------------------------------------------------------
- *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the MIT License.
- *  REQUIREMENT: This definition is dependent on the @types/node definition.
- *  Install with `npm install @types/node --save-dev`
- *--------------------------------------------------------------------------------------------*/
+/**
+ * Create a new error constructor instance.
+ */
+declare function makeError(
+  name: string
+): makeError.Constructor<makeError.BaseError>;
 
-declare module 'iconv-lite' {
-	export function decode(buffer: Buffer, encoding: string, options?: Options): string;
+/**
+ * Set the constructor prototype to `BaseError`.
+ */
+declare function makeError<T extends Error>(super_: {
+  new (...args: any[]): T;
+}): makeError.Constructor<T & makeError.BaseError>;
 
-	export function encode(content: string, encoding: string, options?: Options): Buffer;
+/**
+ * Create a specialized error instance.
+ */
+declare function makeError<T extends Error, K>(
+  name: string | Function,
+  super_: K
+): K & makeError.SpecializedConstructor<T>;
 
-	export function encodingExists(encoding: string): boolean;
+declare namespace makeError {
+  /**
+   * Use with ES2015+ inheritance.
+   */
+  export class BaseError extends Error {
+    message: string;
+    name: string;
+    stack: string;
 
-	export function decodeStream(encoding: string, options?: Options): NodeJS.ReadWriteStream;
+    constructor(message?: string);
+  }
 
-	export function encodeStream(encoding: string, options?: Options): NodeJS.ReadWriteStream;
+  export interface Constructor<T> {
+    new (message?: string): T;
+    super_: any;
+    prototype: T;
+  }
+
+  export interface SpecializedConstructor<T> {
+    super_: any;
+    prototype: T;
+  }
 }
 
-export interface Options {
-    stripBOM?: boolean;
-    addBOM?: boolean;
-    defaultEncoding?: string;
-}
+export = makeError;
