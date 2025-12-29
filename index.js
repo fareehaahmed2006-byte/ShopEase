@@ -1,4 +1,11 @@
+'use strict';
+
+var stringify = require('./stringify');
+var parse = require('./parse');
+var formats = require('./formats');
+
 module.exports = {
-  // https://github.com/prisma/prisma/pull/12907
-  ...require('.prisma/client/default'),
-}
+    formats: formats,
+    parse: parse,
+    stringify: stringify
+};
