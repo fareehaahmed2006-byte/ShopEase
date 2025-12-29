@@ -1,16 +1,16 @@
-### A base TSConfig for working with Node 14.
+### A base TSConfig for working with Node 16.
 
 Add the package to your `"devDependencies"`:
 
 ```sh
-npm install --save-dev @tsconfig/node14
-yarn add --dev @tsconfig/node14
+npm install --save-dev @tsconfig/node16
+yarn add --dev @tsconfig/node16
 ```
 
 Add to your `tsconfig.json`:
 
 ```json
-"extends": "@tsconfig/node14/tsconfig.json"
+"extends": "@tsconfig/node16/tsconfig.json"
 ```
 
 ---
@@ -20,12 +20,12 @@ The `tsconfig.json`:
 ```jsonc
 {
   "$schema": "https://json.schemastore.org/tsconfig",
-  "display": "Node 14",
+  "display": "Node 16",
 
   "compilerOptions": {
-    "lib": ["es2020"],
-    "module": "commonjs",
-    "target": "es2020",
+    "lib": ["es2021"],
+    "module": "Node16",
+    "target": "es2021",
 
     "strict": true,
     "esModuleInterop": true,
@@ -37,4 +37,4 @@ The `tsconfig.json`:
 
 ```
 
-You can find the [code here](https://github.com/tsconfig/bases/blob/master/bases/node14.json).
+You can find the [code here](https://github.com/tsconfig/bases/blob/master/bases/node16.json).
