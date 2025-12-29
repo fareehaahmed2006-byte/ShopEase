@@ -1,3 +1,24 @@
-declare function hasOwn<O, K extends PropertyKey, V = unknown>(o: O, p: K): o is O & Record<K, V>;
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License.
+ *  REQUIREMENT: This definition is dependent on the @types/node definition.
+ *  Install with `npm install @types/node --save-dev`
+ *--------------------------------------------------------------------------------------------*/
 
-export = hasOwn;
+declare module 'iconv-lite' {
+	export function decode(buffer: Buffer, encoding: string, options?: Options): string;
+
+	export function encode(content: string, encoding: string, options?: Options): Buffer;
+
+	export function encodingExists(encoding: string): boolean;
+
+	export function decodeStream(encoding: string, options?: Options): NodeJS.ReadWriteStream;
+
+	export function encodeStream(encoding: string, options?: Options): NodeJS.ReadWriteStream;
+}
+
+export interface Options {
+    stripBOM?: boolean;
+    addBOM?: boolean;
+    defaultEncoding?: string;
+}
