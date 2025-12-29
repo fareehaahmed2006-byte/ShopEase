@@ -1,223 +1,236 @@
+"use strict";
+var __defProp = Object.defineProperty;
+var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
+var __getOwnPropNames = Object.getOwnPropertyNames;
+var __hasOwnProp = Object.prototype.hasOwnProperty;
+var __export = (target, all) => {
+  for (var name in all)
+    __defProp(target, name, { get: all[name], enumerable: true });
+};
+var __copyProps = (to, from, except, desc) => {
+  if (from && typeof from === "object" || typeof from === "function") {
+    for (let key of __getOwnPropNames(from))
+      if (!__hasOwnProp.call(to, key) && key !== except)
+        __defProp(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc(from, key)) || desc.enumerable });
+  }
+  return to;
+};
+var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 
-Object.defineProperty(exports, "__esModule", { value: true });
-
-const {
-  PrismaClientKnownRequestError,
-  PrismaClientUnknownRequestError,
-  PrismaClientRustPanicError,
-  PrismaClientInitializationError,
-  PrismaClientValidationError,
-  NotFoundError,
-  getPrismaClient,
-  sqltag,
-  empty,
-  join,
-  raw,
-  skip,
-  Decimal,
-  Debug,
-  objectEnumValues,
-  makeStrictEnum,
-  Extensions,
-  warnOnce,
-  defineDmmfProperty,
-  Public,
-  getRuntime
-} = require('@prisma/client/runtime/library.js')
-
-
-const Prisma = {}
-
-exports.Prisma = Prisma
-exports.$Enums = {}
-
-/**
- * Prisma Client JS version: 5.22.0
- * Query Engine version: 605197351a3c8bdd595af2d2a9bc3025bca48ea2
- */
-Prisma.prismaVersion = {
-  client: "5.22.0",
-  engine: "605197351a3c8bdd595af2d2a9bc3025bca48ea2"
-}
-
-Prisma.PrismaClientKnownRequestError = PrismaClientKnownRequestError;
-Prisma.PrismaClientUnknownRequestError = PrismaClientUnknownRequestError
-Prisma.PrismaClientRustPanicError = PrismaClientRustPanicError
-Prisma.PrismaClientInitializationError = PrismaClientInitializationError
-Prisma.PrismaClientValidationError = PrismaClientValidationError
-Prisma.NotFoundError = NotFoundError
-Prisma.Decimal = Decimal
-
-/**
- * Re-export of sql-template-tag
- */
-Prisma.sql = sqltag
-Prisma.empty = empty
-Prisma.join = join
-Prisma.raw = raw
-Prisma.validator = Public.validator
-
-/**
-* Extensions
-*/
-Prisma.getExtensionContext = Extensions.getExtensionContext
-Prisma.defineExtension = Extensions.defineExtension
-
-/**
- * Shorthand utilities for JSON filtering
- */
-Prisma.DbNull = objectEnumValues.instances.DbNull
-Prisma.JsonNull = objectEnumValues.instances.JsonNull
-Prisma.AnyNull = objectEnumValues.instances.AnyNull
-
-Prisma.NullTypes = {
-  DbNull: objectEnumValues.classes.DbNull,
-  JsonNull: objectEnumValues.classes.JsonNull,
-  AnyNull: objectEnumValues.classes.AnyNull
-}
-
-
-
-
-  const path = require('path')
-
-/**
- * Enums
- */
-exports.Prisma.TransactionIsolationLevel = makeStrictEnum({
-  Serializable: 'Serializable'
+// src/index.ts
+var src_exports = {};
+__export(src_exports, {
+  Debug: () => Debug,
+  clearLogs: () => clearLogs,
+  default: () => src_default,
+  getLogs: () => getLogs
 });
+module.exports = __toCommonJS(src_exports);
 
-exports.Prisma.UserScalarFieldEnum = {
-  id: 'id',
-  email: 'email',
-  password: 'password'
+// ../../node_modules/.pnpm/kleur@4.1.5/node_modules/kleur/colors.mjs
+var colors_exports = {};
+__export(colors_exports, {
+  $: () => $,
+  bgBlack: () => bgBlack,
+  bgBlue: () => bgBlue,
+  bgCyan: () => bgCyan,
+  bgGreen: () => bgGreen,
+  bgMagenta: () => bgMagenta,
+  bgRed: () => bgRed,
+  bgWhite: () => bgWhite,
+  bgYellow: () => bgYellow,
+  black: () => black,
+  blue: () => blue,
+  bold: () => bold,
+  cyan: () => cyan,
+  dim: () => dim,
+  gray: () => gray,
+  green: () => green,
+  grey: () => grey,
+  hidden: () => hidden,
+  inverse: () => inverse,
+  italic: () => italic,
+  magenta: () => magenta,
+  red: () => red,
+  reset: () => reset,
+  strikethrough: () => strikethrough,
+  underline: () => underline,
+  white: () => white,
+  yellow: () => yellow
+});
+var FORCE_COLOR;
+var NODE_DISABLE_COLORS;
+var NO_COLOR;
+var TERM;
+var isTTY = true;
+if (typeof process !== "undefined") {
+  ({ FORCE_COLOR, NODE_DISABLE_COLORS, NO_COLOR, TERM } = process.env || {});
+  isTTY = process.stdout && process.stdout.isTTY;
+}
+var $ = {
+  enabled: !NODE_DISABLE_COLORS && NO_COLOR == null && TERM !== "dumb" && (FORCE_COLOR != null && FORCE_COLOR !== "0" || isTTY)
 };
+function init(x, y) {
+  let rgx = new RegExp(`\\x1b\\[${y}m`, "g");
+  let open = `\x1B[${x}m`, close = `\x1B[${y}m`;
+  return function(txt) {
+    if (!$.enabled || txt == null) return txt;
+    return open + (!!~("" + txt).indexOf(close) ? txt.replace(rgx, close + open) : txt) + close;
+  };
+}
+var reset = init(0, 0);
+var bold = init(1, 22);
+var dim = init(2, 22);
+var italic = init(3, 23);
+var underline = init(4, 24);
+var inverse = init(7, 27);
+var hidden = init(8, 28);
+var strikethrough = init(9, 29);
+var black = init(30, 39);
+var red = init(31, 39);
+var green = init(32, 39);
+var yellow = init(33, 39);
+var blue = init(34, 39);
+var magenta = init(35, 39);
+var cyan = init(36, 39);
+var white = init(37, 39);
+var gray = init(90, 39);
+var grey = init(90, 39);
+var bgBlack = init(40, 49);
+var bgRed = init(41, 49);
+var bgGreen = init(42, 49);
+var bgYellow = init(43, 49);
+var bgBlue = init(44, 49);
+var bgMagenta = init(45, 49);
+var bgCyan = init(46, 49);
+var bgWhite = init(47, 49);
 
-exports.Prisma.CategoryScalarFieldEnum = {
-  id: 'id',
-  name: 'name'
-};
-
-exports.Prisma.ProductScalarFieldEnum = {
-  id: 'id',
-  name: 'name',
-  price: 'price',
-  categoryId: 'categoryId'
-};
-
-exports.Prisma.CartScalarFieldEnum = {
-  id: 'id',
-  userId: 'userId',
-  productId: 'productId',
-  quantity: 'quantity'
-};
-
-exports.Prisma.OrderScalarFieldEnum = {
-  id: 'id',
-  userId: 'userId',
-  total: 'total'
-};
-
-exports.Prisma.SortOrder = {
-  asc: 'asc',
-  desc: 'desc'
-};
-
-
-exports.Prisma.ModelName = {
-  User: 'User',
-  Category: 'Category',
-  Product: 'Product',
-  Cart: 'Cart',
-  Order: 'Order'
-};
-/**
- * Create the Client
- */
-const config = {
-  "generator": {
-    "name": "client",
-    "provider": {
-      "fromEnvVar": null,
-      "value": "prisma-client-js"
-    },
-    "output": {
-      "value": "C:\\Users\\Digital Traders\\OneDrive\\Desktop\\shopease-backend-db (1)\\shopease-backend-db (1)\\node_modules\\@prisma\\client",
-      "fromEnvVar": null
-    },
-    "config": {
-      "engineType": "library"
-    },
-    "binaryTargets": [
-      {
-        "fromEnvVar": null,
-        "value": "windows",
-        "native": true
-      }
-    ],
-    "previewFeatures": [],
-    "sourceFilePath": "C:\\Users\\Digital Traders\\OneDrive\\Desktop\\shopease-backend-db (1)\\shopease-backend-db (1)\\prisma\\schema.prisma"
-  },
-  "relativeEnvPaths": {
-    "rootEnvPath": null
-  },
-  "relativePath": "../../../prisma",
-  "clientVersion": "5.22.0",
-  "engineVersion": "605197351a3c8bdd595af2d2a9bc3025bca48ea2",
-  "datasourceNames": [
-    "db"
-  ],
-  "activeProvider": "sqlite",
-  "inlineDatasources": {
-    "db": {
-      "url": {
-        "fromEnvVar": null,
-        "value": "file:./dev.db"
-      }
+// src/index.ts
+var MAX_ARGS_HISTORY = 100;
+var COLORS = ["green", "yellow", "blue", "magenta", "cyan", "red"];
+var argsHistory = [];
+var lastTimestamp = Date.now();
+var lastColor = 0;
+var processEnv = typeof process !== "undefined" ? process.env : {};
+globalThis.DEBUG ??= processEnv.DEBUG ?? "";
+globalThis.DEBUG_COLORS ??= processEnv.DEBUG_COLORS ? processEnv.DEBUG_COLORS === "true" : true;
+var topProps = {
+  enable(namespace) {
+    if (typeof namespace === "string") {
+      globalThis.DEBUG = namespace;
     }
   },
-  "inlineSchema": "datasource db {\n  provider = \"sqlite\"\n  url      = \"file:./dev.db\"\n}\n\ngenerator client {\n  provider = \"prisma-client-js\"\n}\n\nmodel User {\n  id       Int    @id @default(autoincrement())\n  email    String\n  password String\n\n  carts  Cart[]\n  orders Order[]\n}\n\nmodel Category {\n  id   Int    @id @default(autoincrement())\n  name String\n\n  products Product[]\n}\n\nmodel Product {\n  id         Int    @id @default(autoincrement())\n  name       String\n  price      Float\n  categoryId Int\n\n  category Category @relation(fields: [categoryId], references: [id])\n  carts    Cart[]\n}\n\nmodel Cart {\n  id        Int @id @default(autoincrement())\n  userId    Int\n  productId Int\n  quantity  Int\n\n  user    User    @relation(fields: [userId], references: [id])\n  product Product @relation(fields: [productId], references: [id])\n}\n\nmodel Order {\n  id     Int   @id @default(autoincrement())\n  userId Int\n  total  Float\n\n  user User @relation(fields: [userId], references: [id])\n}\n",
-  "inlineSchemaHash": "4ec9f8d2288032e027e720c2e3d0e5530ffa5fc780288f8b54cce375449cc243",
-  "copyEngine": true
+  disable() {
+    const prev = globalThis.DEBUG;
+    globalThis.DEBUG = "";
+    return prev;
+  },
+  // this is the core logic to check if logging should happen or not
+  enabled(namespace) {
+    const listenedNamespaces = globalThis.DEBUG.split(",").map((s) => {
+      return s.replace(/[.+?^${}()|[\]\\]/g, "\\$&");
+    });
+    const isListened = listenedNamespaces.some((listenedNamespace) => {
+      if (listenedNamespace === "" || listenedNamespace[0] === "-") return false;
+      return namespace.match(RegExp(listenedNamespace.split("*").join(".*") + "$"));
+    });
+    const isExcluded = listenedNamespaces.some((listenedNamespace) => {
+      if (listenedNamespace === "" || listenedNamespace[0] !== "-") return false;
+      return namespace.match(RegExp(listenedNamespace.slice(1).split("*").join(".*") + "$"));
+    });
+    return isListened && !isExcluded;
+  },
+  log: (...args) => {
+    const [namespace, format, ...rest] = args;
+    const logWithFormatting = console.warn ?? console.log;
+    logWithFormatting(`${namespace} ${format}`, ...rest);
+  },
+  formatters: {}
+  // not implemented
+};
+function debugCreate(namespace) {
+  const instanceProps = {
+    color: COLORS[lastColor++ % COLORS.length],
+    enabled: topProps.enabled(namespace),
+    namespace,
+    log: topProps.log,
+    extend: () => {
+    }
+    // not implemented
+  };
+  const debugCall = (...args) => {
+    const { enabled, namespace: namespace2, color, log } = instanceProps;
+    if (args.length !== 0) {
+      argsHistory.push([namespace2, ...args]);
+    }
+    if (argsHistory.length > MAX_ARGS_HISTORY) {
+      argsHistory.shift();
+    }
+    if (topProps.enabled(namespace2) || enabled) {
+      const stringArgs = args.map((arg) => {
+        if (typeof arg === "string") {
+          return arg;
+        }
+        return safeStringify(arg);
+      });
+      const ms = `+${Date.now() - lastTimestamp}ms`;
+      lastTimestamp = Date.now();
+      if (globalThis.DEBUG_COLORS) {
+        log(colors_exports[color](bold(namespace2)), ...stringArgs, colors_exports[color](ms));
+      } else {
+        log(namespace2, ...stringArgs, ms);
+      }
+    }
+  };
+  return new Proxy(debugCall, {
+    get: (_, prop) => instanceProps[prop],
+    set: (_, prop, value) => instanceProps[prop] = value
+  });
 }
-
-const fs = require('fs')
-
-config.dirname = __dirname
-if (!fs.existsSync(path.join(__dirname, 'schema.prisma'))) {
-  const alternativePaths = [
-    "node_modules/.prisma/client",
-    ".prisma/client",
-  ]
-  
-  const alternativePath = alternativePaths.find((altPath) => {
-    return fs.existsSync(path.join(process.cwd(), altPath, 'schema.prisma'))
-  }) ?? alternativePaths[0]
-
-  config.dirname = path.join(process.cwd(), alternativePath)
-  config.isBundled = true
+var Debug = new Proxy(debugCreate, {
+  get: (_, prop) => topProps[prop],
+  set: (_, prop, value) => topProps[prop] = value
+});
+function safeStringify(value, indent = 2) {
+  const cache = /* @__PURE__ */ new Set();
+  return JSON.stringify(
+    value,
+    (key, value2) => {
+      if (typeof value2 === "object" && value2 !== null) {
+        if (cache.has(value2)) {
+          return `[Circular *]`;
+        }
+        cache.add(value2);
+      } else if (typeof value2 === "bigint") {
+        return value2.toString();
+      }
+      return value2;
+    },
+    indent
+  );
 }
-
-config.runtimeDataModel = JSON.parse("{\"models\":{\"User\":{\"dbName\":null,\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":true,\"isReadOnly\":false,\"hasDefaultValue\":true,\"type\":\"Int\",\"default\":{\"name\":\"autoincrement\",\"args\":[]},\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"email\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"String\",\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"password\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"String\",\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"carts\",\"kind\":\"object\",\"isList\":true,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"Cart\",\"relationName\":\"CartToUser\",\"relationFromFields\":[],\"relationToFields\":[],\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"orders\",\"kind\":\"object\",\"isList\":true,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"Order\",\"relationName\":\"OrderToUser\",\"relationFromFields\":[],\"relationToFields\":[],\"isGenerated\":false,\"isUpdatedAt\":false}],\"primaryKey\":null,\"uniqueFields\":[],\"uniqueIndexes\":[],\"isGenerated\":false},\"Category\":{\"dbName\":null,\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":true,\"isReadOnly\":false,\"hasDefaultValue\":true,\"type\":\"Int\",\"default\":{\"name\":\"autoincrement\",\"args\":[]},\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"name\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"String\",\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"products\",\"kind\":\"object\",\"isList\":true,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"Product\",\"relationName\":\"CategoryToProduct\",\"relationFromFields\":[],\"relationToFields\":[],\"isGenerated\":false,\"isUpdatedAt\":false}],\"primaryKey\":null,\"uniqueFields\":[],\"uniqueIndexes\":[],\"isGenerated\":false},\"Product\":{\"dbName\":null,\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":true,\"isReadOnly\":false,\"hasDefaultValue\":true,\"type\":\"Int\",\"default\":{\"name\":\"autoincrement\",\"args\":[]},\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"name\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"String\",\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"price\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"Float\",\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"categoryId\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":true,\"hasDefaultValue\":false,\"type\":\"Int\",\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"category\",\"kind\":\"object\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"Category\",\"relationName\":\"CategoryToProduct\",\"relationFromFields\":[\"categoryId\"],\"relationToFields\":[\"id\"],\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"carts\",\"kind\":\"object\",\"isList\":true,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"Cart\",\"relationName\":\"CartToProduct\",\"relationFromFields\":[],\"relationToFields\":[],\"isGenerated\":false,\"isUpdatedAt\":false}],\"primaryKey\":null,\"uniqueFields\":[],\"uniqueIndexes\":[],\"isGenerated\":false},\"Cart\":{\"dbName\":null,\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":true,\"isReadOnly\":false,\"hasDefaultValue\":true,\"type\":\"Int\",\"default\":{\"name\":\"autoincrement\",\"args\":[]},\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"userId\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":true,\"hasDefaultValue\":false,\"type\":\"Int\",\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"productId\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":true,\"hasDefaultValue\":false,\"type\":\"Int\",\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"quantity\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"Int\",\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"user\",\"kind\":\"object\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"User\",\"relationName\":\"CartToUser\",\"relationFromFields\":[\"userId\"],\"relationToFields\":[\"id\"],\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"product\",\"kind\":\"object\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"Product\",\"relationName\":\"CartToProduct\",\"relationFromFields\":[\"productId\"],\"relationToFields\":[\"id\"],\"isGenerated\":false,\"isUpdatedAt\":false}],\"primaryKey\":null,\"uniqueFields\":[],\"uniqueIndexes\":[],\"isGenerated\":false},\"Order\":{\"dbName\":null,\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":true,\"isReadOnly\":false,\"hasDefaultValue\":true,\"type\":\"Int\",\"default\":{\"name\":\"autoincrement\",\"args\":[]},\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"userId\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":true,\"hasDefaultValue\":false,\"type\":\"Int\",\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"total\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"Float\",\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"user\",\"kind\":\"object\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"User\",\"relationName\":\"OrderToUser\",\"relationFromFields\":[\"userId\"],\"relationToFields\":[\"id\"],\"isGenerated\":false,\"isUpdatedAt\":false}],\"primaryKey\":null,\"uniqueFields\":[],\"uniqueIndexes\":[],\"isGenerated\":false}},\"enums\":{},\"types\":{}}")
-defineDmmfProperty(exports.Prisma, config.runtimeDataModel)
-config.engineWasm = undefined
-
-
-const { warnEnvConflicts } = require('@prisma/client/runtime/library.js')
-
-warnEnvConflicts({
-    rootEnvPath: config.relativeEnvPaths.rootEnvPath && path.resolve(config.dirname, config.relativeEnvPaths.rootEnvPath),
-    schemaEnvPath: config.relativeEnvPaths.schemaEnvPath && path.resolve(config.dirname, config.relativeEnvPaths.schemaEnvPath)
-})
-
-const PrismaClient = getPrismaClient(config)
-exports.PrismaClient = PrismaClient
-Object.assign(exports, Prisma)
-
-// file annotations for bundling tools to include these files
-path.join(__dirname, "query_engine-windows.dll.node");
-path.join(process.cwd(), "node_modules/.prisma/client/query_engine-windows.dll.node")
-// file annotations for bundling tools to include these files
-path.join(__dirname, "schema.prisma");
-path.join(process.cwd(), "node_modules/.prisma/client/schema.prisma")
+function getLogs(numChars = 7500) {
+  const logs = argsHistory.map(([namespace, ...args]) => {
+    return `${namespace} ${args.map((arg) => {
+      if (typeof arg === "string") {
+        return arg;
+      } else {
+        return JSON.stringify(arg);
+      }
+    }).join(" ")}`;
+  }).join("\n");
+  if (logs.length < numChars) {
+    return logs;
+  }
+  return logs.slice(-numChars);
+}
+function clearLogs() {
+  argsHistory.length = 0;
+}
+var src_default = Debug;
+// Annotate the CommonJS export names for ESM import in node:
+0 && (module.exports = {
+  Debug,
+  clearLogs,
+  getLogs
+});
