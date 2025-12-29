@@ -1,140 +1,282 @@
-# accepts
+# Acorn
 
-[![NPM Version][npm-version-image]][npm-url]
-[![NPM Downloads][npm-downloads-image]][npm-url]
-[![Node.js Version][node-version-image]][node-version-url]
-[![Build Status][github-actions-ci-image]][github-actions-ci-url]
-[![Test Coverage][coveralls-image]][coveralls-url]
+A tiny, fast JavaScript parser written in JavaScript.
 
-Higher level content negotiation based on [negotiator](https://www.npmjs.com/package/negotiator).
-Extracted from [koa](https://www.npmjs.com/package/koa) for general use.
+## Community
 
-In addition to negotiator, it allows:
+Acorn is open source software released under an
+[MIT license](https://github.com/acornjs/acorn/blob/master/acorn/LICENSE).
 
-- Allows types as an array or arguments list, ie `(['text/html', 'application/json'])`
-  as well as `('text/html', 'application/json')`.
-- Allows type shorthands such as `json`.
-- Returns `false` when no types match
-- Treats non-existent headers as `*`
+You are welcome to
+[report bugs](https://github.com/acornjs/acorn/issues) or create pull
+requests on [github](https://github.com/acornjs/acorn).
 
 ## Installation
 
-This is a [Node.js](https://nodejs.org/en/) module available through the
-[npm registry](https://www.npmjs.com/). Installation is done using the
-[`npm install` command](https://docs.npmjs.com/getting-started/installing-npm-packages-locally):
+The easiest way to install acorn is from [`npm`](https://www.npmjs.com/):
 
 ```sh
-$ npm install accepts
+npm install acorn
 ```
 
-## API
+Alternately, you can download the source and build acorn yourself:
 
-```js
-var accepts = require('accepts')
+```sh
+git clone https://github.com/acornjs/acorn.git
+cd acorn
+npm install
 ```
 
-### accepts(req)
+## Interface
 
-Create a new `Accepts` object for the given `req`.
+**parse**`(input, options)` is the main interface to the library. The
+`input` parameter is a string, `options` must be an object setting
+some of the options listed below. The return value will be an abstract
+syntax tree object as specified by the [ESTree
+spec](https://github.com/estree/estree).
 
-#### .charset(charsets)
+```javascript
+let acorn = require("acorn");
+console.log(acorn.parse("1 + 1", {ecmaVersion: 2020}));
+```
 
-Return the first accepted charset. If nothing in `charsets` is accepted,
-then `false` is returned.
+When encountering a syntax error, the parser will raise a
+`SyntaxError` object with a meaningful message. The error object will
+have a `pos` property that indicates the string offset at which the
+error occurred, and a `loc` object that contains a `{line, column}`
+object referring to that same position.
 
-#### .charsets()
+Options are provided by in a second argument, which should be an
+object containing any of these fields (only `ecmaVersion` is
+required):
 
-Return the charsets that the request accepts, in the order of the client's
-preference (most preferred first).
+- **ecmaVersion**: Indicates the ECMAScript version to parse. Can be a
+  number, either in year (`2022`) or plain version number (`6`) form,
+  or `"latest"` (the latest the library supports). This influences
+  support for strict mode, the set of reserved words, and support for
+  new syntax features.
 
-#### .encoding(encodings)
+  **NOTE**: Only 'stage 4' (finalized) ECMAScript features are being
+  implemented by Acorn. Other proposed new features must be
+  implemented through plugins.
 
-Return the first accepted encoding. If nothing in `encodings` is accepted,
-then `false` is returned.
+- **sourceType**: Indicate the mode the code should be parsed in. Can be
+  either `"script"` or `"module"`. This influences global strict mode
+  and parsing of `import` and `export` declarations.
 
-#### .encodings()
+  **NOTE**: If set to `"module"`, then static `import` / `export` syntax
+  will be valid, even if `ecmaVersion` is less than 6.
 
-Return the encodings that the request accepts, in the order of the client's
-preference (most preferred first).
+- **onInsertedSemicolon**: If given a callback, that callback will be
+  called whenever a missing semicolon is inserted by the parser. The
+  callback will be given the character offset of the point where the
+  semicolon is inserted as argument, and if `locations` is on, also a
+  `{line, column}` object representing this position.
 
-#### .language(languages)
+- **onTrailingComma**: Like `onInsertedSemicolon`, but for trailing
+  commas.
 
-Return the first accepted language. If nothing in `languages` is accepted,
-then `false` is returned.
+- **allowReserved**: If `false`, using a reserved word will generate
+  an error. Defaults to `true` for `ecmaVersion` 3, `false` for higher
+  versions. When given the value `"never"`, reserved words and
+  keywords can also not be used as property names (as in Internet
+  Explorer's old parser).
 
-#### .languages()
+- **allowReturnOutsideFunction**: By default, a return statement at
+  the top level raises an error. Set this to `true` to accept such
+  code.
 
-Return the languages that the request accepts, in the order of the client's
-preference (most preferred first).
+- **allowImportExportEverywhere**: By default, `import` and `export`
+  declarations can only appear at a program's top level. Setting this
+  option to `true` allows them anywhere where a statement is allowed,
+  and also allows `import.meta` expressions to appear in scripts
+  (when `sourceType` is not `"module"`).
 
-#### .type(types)
+- **allowAwaitOutsideFunction**: If `false`, `await` expressions can
+  only appear inside `async` functions. Defaults to `true` in modules
+  for `ecmaVersion` 2022 and later, `false` for lower versions.
+  Setting this option to `true` allows to have top-level `await`
+  expressions. They are still not allowed in non-`async` functions,
+  though.
 
-Return the first accepted type (and it is returned as the same text as what
-appears in the `types` array). If nothing in `types` is accepted, then `false`
-is returned.
+- **allowSuperOutsideMethod**: By default, `super` outside a method
+  raises an error. Set this to `true` to accept such code.
 
-The `types` array can contain full MIME types or file extensions. Any value
-that is not a full MIME types is passed to `require('mime-types').lookup`.
+- **allowHashBang**: When this is enabled, if the code starts with the
+  characters `#!` (as in a shellscript), the first line will be
+  treated as a comment. Defaults to true when `ecmaVersion` >= 2023.
 
-#### .types()
+- **checkPrivateFields**: By default, the parser will verify that
+  private properties are only used in places where they are valid and
+  have been declared. Set this to false to turn such checks off.
 
-Return the types that the request accepts, in the order of the client's
-preference (most preferred first).
+- **locations**: When `true`, each node has a `loc` object attached
+  with `start` and `end` subobjects, each of which contains the
+  one-based line and zero-based column numbers in `{line, column}`
+  form. Default is `false`.
 
-## Examples
+- **onToken**: If a function is passed for this option, each found
+  token will be passed in same format as tokens returned from
+  `tokenizer().getToken()`.
 
-### Simple type negotiation
+  If array is passed, each found token is pushed to it.
 
-This simple example shows how to use `accepts` to return a different typed
-respond body based on what the client wants to accept. The server lists it's
-preferences in order and will get back the best match between the client and
-server.
+  Note that you are not allowed to call the parser from the
+  callback—that will corrupt its internal state.
 
-```js
-var accepts = require('accepts')
-var http = require('http')
+- **onComment**: If a function is passed for this option, whenever a
+  comment is encountered the function will be called with the
+  following parameters:
 
-function app (req, res) {
-  var accept = accepts(req)
+  - `block`: `true` if the comment is a block comment, false if it
+    is a line comment.
+  - `text`: The content of the comment.
+  - `start`: Character offset of the start of the comment.
+  - `end`: Character offset of the end of the comment.
 
-  // the order of this list is significant; should be server preferred order
-  switch (accept.type(['json', 'html'])) {
-    case 'json':
-      res.setHeader('Content-Type', 'application/json')
-      res.write('{"hello":"world!"}')
-      break
-    case 'html':
-      res.setHeader('Content-Type', 'text/html')
-      res.write('<b>hello, world!</b>')
-      break
-    default:
-      // the fallback is text/plain, so no need to specify it above
-      res.setHeader('Content-Type', 'text/plain')
-      res.write('hello, world!')
-      break
+  When the `locations` options is on, the `{line, column}` locations
+  of the comment’s start and end are passed as two additional
+  parameters.
+
+  If array is passed for this option, each found comment is pushed
+  to it as object in Esprima format:
+
+  ```javascript
+  {
+    "type": "Line" | "Block",
+    "value": "comment text",
+    "start": Number,
+    "end": Number,
+    // If `locations` option is on:
+    "loc": {
+      "start": {line: Number, column: Number}
+      "end": {line: Number, column: Number}
+    },
+    // If `ranges` option is on:
+    "range": [Number, Number]
   }
+  ```
 
-  res.end()
+  Note that you are not allowed to call the parser from the
+  callback—that will corrupt its internal state.
+
+- **ranges**: Nodes have their start and end characters offsets
+  recorded in `start` and `end` properties (directly on the node,
+  rather than the `loc` object, which holds line/column data. To also
+  add a
+  [semi-standardized](https://bugzilla.mozilla.org/show_bug.cgi?id=745678)
+  `range` property holding a `[start, end]` array with the same
+  numbers, set the `ranges` option to `true`.
+
+- **program**: It is possible to parse multiple files into a single
+  AST by passing the tree produced by parsing the first file as the
+  `program` option in subsequent parses. This will add the toplevel
+  forms of the parsed file to the "Program" (top) node of an existing
+  parse tree.
+
+- **sourceFile**: When the `locations` option is `true`, you can pass
+  this option to add a `source` attribute in every node’s `loc`
+  object. Note that the contents of this option are not examined or
+  processed in any way; you are free to use whatever format you
+  choose.
+
+- **directSourceFile**: Like `sourceFile`, but a `sourceFile` property
+  will be added (regardless of the `location` option) directly to the
+  nodes, rather than the `loc` object.
+
+- **preserveParens**: If this option is `true`, parenthesized expressions
+  are represented by (non-standard) `ParenthesizedExpression` nodes
+  that have a single `expression` property containing the expression
+  inside parentheses.
+
+**parseExpressionAt**`(input, offset, options)` will parse a single
+expression in a string, and return its AST. It will not complain if
+there is more of the string left after the expression.
+
+**tokenizer**`(input, options)` returns an object with a `getToken`
+method that can be called repeatedly to get the next token, a `{start,
+end, type, value}` object (with added `loc` property when the
+`locations` option is enabled and `range` property when the `ranges`
+option is enabled). When the token's type is `tokTypes.eof`, you
+should stop calling the method, since it will keep returning that same
+token forever.
+
+Note that tokenizing JavaScript without parsing it is, in modern
+versions of the language, not really possible due to the way syntax is
+overloaded in ways that can only be disambiguated by the parse
+context. This package applies a bunch of heuristics to try and do a
+reasonable job, but you are advised to use `parse` with the `onToken`
+option instead of this.
+
+In ES6 environment, returned result can be used as any other
+protocol-compliant iterable:
+
+```javascript
+for (let token of acorn.tokenizer(str)) {
+  // iterate over the tokens
 }
 
-http.createServer(app).listen(3000)
+// transform code to array of tokens:
+var tokens = [...acorn.tokenizer(str)];
 ```
 
-You can test this out with the cURL program:
-```sh
-curl -I -H'Accept: text/html' http://localhost:3000/
+**tokTypes** holds an object mapping names to the token type objects
+that end up in the `type` properties of tokens.
+
+**getLineInfo**`(input, offset)` can be used to get a `{line,
+column}` object for a given program string and offset.
+
+### The `Parser` class
+
+Instances of the **`Parser`** class contain all the state and logic
+that drives a parse. It has static methods `parse`,
+`parseExpressionAt`, and `tokenizer` that match the top-level
+functions by the same name.
+
+When extending the parser with plugins, you need to call these methods
+on the extended version of the class. To extend a parser with plugins,
+you can use its static `extend` method.
+
+```javascript
+var acorn = require("acorn");
+var jsx = require("acorn-jsx");
+var JSXParser = acorn.Parser.extend(jsx());
+JSXParser.parse("foo(<bar/>)", {ecmaVersion: 2020});
 ```
 
-## License
+The `extend` method takes any number of plugin values, and returns a
+new `Parser` class that includes the extra parser logic provided by
+the plugins.
 
-[MIT](LICENSE)
+## Command line interface
 
-[coveralls-image]: https://badgen.net/coveralls/c/github/jshttp/accepts/master
-[coveralls-url]: https://coveralls.io/r/jshttp/accepts?branch=master
-[github-actions-ci-image]: https://badgen.net/github/checks/jshttp/accepts/master?label=ci
-[github-actions-ci-url]: https://github.com/jshttp/accepts/actions/workflows/ci.yml
-[node-version-image]: https://badgen.net/npm/node/accepts
-[node-version-url]: https://nodejs.org/en/download
-[npm-downloads-image]: https://badgen.net/npm/dm/accepts
-[npm-url]: https://npmjs.org/package/accepts
-[npm-version-image]: https://badgen.net/npm/v/accepts
+The `bin/acorn` utility can be used to parse a file from the command
+line. It accepts as arguments its input file and the following
+options:
+
+- `--ecma3|--ecma5|--ecma6|--ecma7|--ecma8|--ecma9|--ecma10`: Sets the ECMAScript version
+  to parse. Default is version 9.
+
+- `--module`: Sets the parsing mode to `"module"`. Is set to `"script"` otherwise.
+
+- `--locations`: Attaches a "loc" object to each node with "start" and
+  "end" subobjects, each of which contains the one-based line and
+  zero-based column numbers in `{line, column}` form.
+
+- `--allow-hash-bang`: If the code starts with the characters #! (as
+  in a shellscript), the first line will be treated as a comment.
+
+- `--allow-await-outside-function`: Allows top-level `await` expressions.
+  See the `allowAwaitOutsideFunction` option for more information.
+
+- `--compact`: No whitespace is used in the AST output.
+
+- `--silent`: Do not output the AST, just return the exit status.
+
+- `--help`: Print the usage information and quit.
+
+The utility spits out the syntax tree as JSON data.
+
+## Existing plugins
+
+ - [`acorn-jsx`](https://github.com/RReverser/acorn-jsx): Parse [Facebook JSX syntax extensions](https://github.com/facebook/jsx)
