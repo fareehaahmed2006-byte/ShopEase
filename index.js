@@ -1,209 +1,216 @@
-/*!
- * destroy
- * Copyright(c) 2014 Jonathan Ong
- * Copyright(c) 2015-2022 Douglas Christopher Wilson
- * MIT Licensed
- */
+/*istanbul ignore start*/
+"use strict";
 
-'use strict'
-
-/**
- * Module dependencies.
- * @private
- */
-
-var EventEmitter = require('events').EventEmitter
-var ReadStream = require('fs').ReadStream
-var Stream = require('stream')
-var Zlib = require('zlib')
-
-/**
- * Module exports.
- * @public
- */
-
-module.exports = destroy
-
-/**
- * Destroy the given stream, and optionally suppress any future `error` events.
- *
- * @param {object} stream
- * @param {boolean} suppress
- * @public
- */
-
-function destroy (stream, suppress) {
-  if (isFsReadStream(stream)) {
-    destroyReadStream(stream)
-  } else if (isZlibStream(stream)) {
-    destroyZlibStream(stream)
-  } else if (hasDestroy(stream)) {
-    stream.destroy()
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+Object.defineProperty(exports, "Diff", {
+  enumerable: true,
+  get: function get() {
+    return _base.default;
   }
-
-  if (isEventEmitter(stream) && suppress) {
-    stream.removeAllListeners('error')
-    stream.addListener('error', noop)
+});
+Object.defineProperty(exports, "diffChars", {
+  enumerable: true,
+  get: function get() {
+    return _character.diffChars;
   }
-
-  return stream
-}
-
-/**
- * Destroy a ReadStream.
- *
- * @param {object} stream
- * @private
- */
-
-function destroyReadStream (stream) {
-  stream.destroy()
-
-  if (typeof stream.close === 'function') {
-    // node.js core bug work-around
-    stream.on('open', onOpenClose)
+});
+Object.defineProperty(exports, "diffWords", {
+  enumerable: true,
+  get: function get() {
+    return _word.diffWords;
   }
-}
-
-/**
- * Close a Zlib stream.
- *
- * Zlib streams below Node.js 4.5.5 have a buggy implementation
- * of .close() when zlib encountered an error.
- *
- * @param {object} stream
- * @private
- */
-
-function closeZlibStream (stream) {
-  if (stream._hadError === true) {
-    var prop = stream._binding === null
-      ? '_binding'
-      : '_handle'
-
-    stream[prop] = {
-      close: function () { this[prop] = null }
-    }
+});
+Object.defineProperty(exports, "diffWordsWithSpace", {
+  enumerable: true,
+  get: function get() {
+    return _word.diffWordsWithSpace;
   }
-
-  stream.close()
-}
-
-/**
- * Destroy a Zlib stream.
- *
- * Zlib streams don't have a destroy function in Node.js 6. On top of that
- * simply calling destroy on a zlib stream in Node.js 8+ will result in a
- * memory leak. So until that is fixed, we need to call both close AND destroy.
- *
- * PR to fix memory leak: https://github.com/nodejs/node/pull/23734
- *
- * In Node.js 6+8, it's important that destroy is called before close as the
- * stream would otherwise emit the error 'zlib binding closed'.
- *
- * @param {object} stream
- * @private
- */
-
-function destroyZlibStream (stream) {
-  if (typeof stream.destroy === 'function') {
-    // node.js core bug work-around
-    // istanbul ignore if: node.js 0.8
-    if (stream._binding) {
-      // node.js < 0.10.0
-      stream.destroy()
-      if (stream._processing) {
-        stream._needDrain = true
-        stream.once('drain', onDrainClearBinding)
-      } else {
-        stream._binding.clear()
-      }
-    } else if (stream._destroy && stream._destroy !== Stream.Transform.prototype._destroy) {
-      // node.js >= 12, ^11.1.0, ^10.15.1
-      stream.destroy()
-    } else if (stream._destroy && typeof stream.close === 'function') {
-      // node.js 7, 8
-      stream.destroyed = true
-      stream.close()
-    } else {
-      // fallback
-      // istanbul ignore next
-      stream.destroy()
-    }
-  } else if (typeof stream.close === 'function') {
-    // node.js < 8 fallback
-    closeZlibStream(stream)
+});
+Object.defineProperty(exports, "diffLines", {
+  enumerable: true,
+  get: function get() {
+    return _line.diffLines;
   }
-}
-
-/**
- * Determine if stream has destroy.
- * @private
- */
-
-function hasDestroy (stream) {
-  return stream instanceof Stream &&
-    typeof stream.destroy === 'function'
-}
-
-/**
- * Determine if val is EventEmitter.
- * @private
- */
-
-function isEventEmitter (val) {
-  return val instanceof EventEmitter
-}
-
-/**
- * Determine if stream is fs.ReadStream stream.
- * @private
- */
-
-function isFsReadStream (stream) {
-  return stream instanceof ReadStream
-}
-
-/**
- * Determine if stream is Zlib stream.
- * @private
- */
-
-function isZlibStream (stream) {
-  return stream instanceof Zlib.Gzip ||
-    stream instanceof Zlib.Gunzip ||
-    stream instanceof Zlib.Deflate ||
-    stream instanceof Zlib.DeflateRaw ||
-    stream instanceof Zlib.Inflate ||
-    stream instanceof Zlib.InflateRaw ||
-    stream instanceof Zlib.Unzip
-}
-
-/**
- * No-op function.
- * @private
- */
-
-function noop () {}
-
-/**
- * On drain handler to clear binding.
- * @private
- */
-
-// istanbul ignore next: node.js 0.8
-function onDrainClearBinding () {
-  this._binding.clear()
-}
-
-/**
- * On open handler to close stream.
- * @private
- */
-
-function onOpenClose () {
-  if (typeof this.fd === 'number') {
-    // actually close down the fd
-    this.close()
+});
+Object.defineProperty(exports, "diffTrimmedLines", {
+  enumerable: true,
+  get: function get() {
+    return _line.diffTrimmedLines;
   }
-}
+});
+Object.defineProperty(exports, "diffSentences", {
+  enumerable: true,
+  get: function get() {
+    return _sentence.diffSentences;
+  }
+});
+Object.defineProperty(exports, "diffCss", {
+  enumerable: true,
+  get: function get() {
+    return _css.diffCss;
+  }
+});
+Object.defineProperty(exports, "diffJson", {
+  enumerable: true,
+  get: function get() {
+    return _json.diffJson;
+  }
+});
+Object.defineProperty(exports, "canonicalize", {
+  enumerable: true,
+  get: function get() {
+    return _json.canonicalize;
+  }
+});
+Object.defineProperty(exports, "diffArrays", {
+  enumerable: true,
+  get: function get() {
+    return _array.diffArrays;
+  }
+});
+Object.defineProperty(exports, "applyPatch", {
+  enumerable: true,
+  get: function get() {
+    return _apply.applyPatch;
+  }
+});
+Object.defineProperty(exports, "applyPatches", {
+  enumerable: true,
+  get: function get() {
+    return _apply.applyPatches;
+  }
+});
+Object.defineProperty(exports, "parsePatch", {
+  enumerable: true,
+  get: function get() {
+    return _parse.parsePatch;
+  }
+});
+Object.defineProperty(exports, "merge", {
+  enumerable: true,
+  get: function get() {
+    return _merge.merge;
+  }
+});
+Object.defineProperty(exports, "structuredPatch", {
+  enumerable: true,
+  get: function get() {
+    return _create.structuredPatch;
+  }
+});
+Object.defineProperty(exports, "createTwoFilesPatch", {
+  enumerable: true,
+  get: function get() {
+    return _create.createTwoFilesPatch;
+  }
+});
+Object.defineProperty(exports, "createPatch", {
+  enumerable: true,
+  get: function get() {
+    return _create.createPatch;
+  }
+});
+Object.defineProperty(exports, "convertChangesToDMP", {
+  enumerable: true,
+  get: function get() {
+    return _dmp.convertChangesToDMP;
+  }
+});
+Object.defineProperty(exports, "convertChangesToXML", {
+  enumerable: true,
+  get: function get() {
+    return _xml.convertChangesToXML;
+  }
+});
+
+/*istanbul ignore end*/
+var
+/*istanbul ignore start*/
+_base = _interopRequireDefault(require("./diff/base"))
+/*istanbul ignore end*/
+;
+
+var
+/*istanbul ignore start*/
+_character = require("./diff/character")
+/*istanbul ignore end*/
+;
+
+var
+/*istanbul ignore start*/
+_word = require("./diff/word")
+/*istanbul ignore end*/
+;
+
+var
+/*istanbul ignore start*/
+_line = require("./diff/line")
+/*istanbul ignore end*/
+;
+
+var
+/*istanbul ignore start*/
+_sentence = require("./diff/sentence")
+/*istanbul ignore end*/
+;
+
+var
+/*istanbul ignore start*/
+_css = require("./diff/css")
+/*istanbul ignore end*/
+;
+
+var
+/*istanbul ignore start*/
+_json = require("./diff/json")
+/*istanbul ignore end*/
+;
+
+var
+/*istanbul ignore start*/
+_array = require("./diff/array")
+/*istanbul ignore end*/
+;
+
+var
+/*istanbul ignore start*/
+_apply = require("./patch/apply")
+/*istanbul ignore end*/
+;
+
+var
+/*istanbul ignore start*/
+_parse = require("./patch/parse")
+/*istanbul ignore end*/
+;
+
+var
+/*istanbul ignore start*/
+_merge = require("./patch/merge")
+/*istanbul ignore end*/
+;
+
+var
+/*istanbul ignore start*/
+_create = require("./patch/create")
+/*istanbul ignore end*/
+;
+
+var
+/*istanbul ignore start*/
+_dmp = require("./convert/dmp")
+/*istanbul ignore end*/
+;
+
+var
+/*istanbul ignore start*/
+_xml = require("./convert/xml")
+/*istanbul ignore end*/
+;
+
+/*istanbul ignore start*/ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+/*istanbul ignore end*/
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi4uL3NyYy9pbmRleC5qcyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOzs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7OztBQWdCQTtBQUFBO0FBQUE7QUFBQTtBQUFBOztBQUNBO0FBQUE7QUFBQTtBQUFBO0FBQUE7O0FBQ0E7QUFBQTtBQUFBO0FBQUE7QUFBQTs7QUFDQTtBQUFBO0FBQUE7QUFBQTtBQUFBOztBQUNBO0FBQUE7QUFBQTtBQUFBO0FBQUE7O0FBRUE7QUFBQTtBQUFBO0FBQUE7QUFBQTs7QUFDQTtBQUFBO0FBQUE7QUFBQTtBQUFBOztBQUVBO0FBQUE7QUFBQTtBQUFBO0FBQUE7O0FBRUE7QUFBQTtBQUFBO0FBQUE7QUFBQTs7QUFDQTtBQUFBO0FBQUE7QUFBQTtBQUFBOztBQUNBO0FBQUE7QUFBQTtBQUFBO0FBQUE7O0FBQ0E7QUFBQTtBQUFBO0FBQUE7QUFBQTs7QUFFQTtBQUFBO0FBQUE7QUFBQTtBQUFBOztBQUNBO0FBQUE7QUFBQTtBQUFBO0FBQUEiLCJzb3VyY2VzQ29udGVudCI6WyIvKiBTZWUgTElDRU5TRSBmaWxlIGZvciB0ZXJtcyBvZiB1c2UgKi9cblxuLypcbiAqIFRleHQgZGlmZiBpbXBsZW1lbnRhdGlvbi5cbiAqXG4gKiBUaGlzIGxpYnJhcnkgc3VwcG9ydHMgdGhlIGZvbGxvd2luZyBBUElTOlxuICogSnNEaWZmLmRpZmZDaGFyczogQ2hhcmFjdGVyIGJ5IGNoYXJhY3RlciBkaWZmXG4gKiBKc0RpZmYuZGlmZldvcmRzOiBXb3JkIChhcyBkZWZpbmVkIGJ5IFxcYiByZWdleCkgZGlmZiB3aGljaCBpZ25vcmVzIHdoaXRlc3BhY2VcbiAqIEpzRGlmZi5kaWZmTGluZXM6IExpbmUgYmFzZWQgZGlmZlxuICpcbiAqIEpzRGlmZi5kaWZmQ3NzOiBEaWZmIHRhcmdldGVkIGF0IENTUyBjb250ZW50XG4gKlxuICogVGhlc2UgbWV0aG9kcyBhcmUgYmFzZWQgb24gdGhlIGltcGxlbWVudGF0aW9uIHByb3Bvc2VkIGluXG4gKiBcIkFuIE8oTkQpIERpZmZlcmVuY2UgQWxnb3JpdGhtIGFuZCBpdHMgVmFyaWF0aW9uc1wiIChNeWVycywgMTk4NikuXG4gKiBodHRwOi8vY2l0ZXNlZXJ4LmlzdC5wc3UuZWR1L3ZpZXdkb2Mvc3VtbWFyeT9kb2k9MTAuMS4xLjQuNjkyN1xuICovXG5pbXBvcnQgRGlmZiBmcm9tICcuL2RpZmYvYmFzZSc7XG5pbXBvcnQge2RpZmZDaGFyc30gZnJvbSAnLi9kaWZmL2NoYXJhY3Rlcic7XG5pbXBvcnQge2RpZmZXb3JkcywgZGlmZldvcmRzV2l0aFNwYWNlfSBmcm9tICcuL2RpZmYvd29yZCc7XG5pbXBvcnQge2RpZmZMaW5lcywgZGlmZlRyaW1tZWRMaW5lc30gZnJvbSAnLi9kaWZmL2xpbmUnO1xuaW1wb3J0IHtkaWZmU2VudGVuY2VzfSBmcm9tICcuL2RpZmYvc2VudGVuY2UnO1xuXG5pbXBvcnQge2RpZmZDc3N9IGZyb20gJy4vZGlmZi9jc3MnO1xuaW1wb3J0IHtkaWZmSnNvbiwgY2Fub25pY2FsaXplfSBmcm9tICcuL2RpZmYvanNvbic7XG5cbmltcG9ydCB7ZGlmZkFycmF5c30gZnJvbSAnLi9kaWZmL2FycmF5JztcblxuaW1wb3J0IHthcHBseVBhdGNoLCBhcHBseVBhdGNoZXN9IGZyb20gJy4vcGF0Y2gvYXBwbHknO1xuaW1wb3J0IHtwYXJzZVBhdGNofSBmcm9tICcuL3BhdGNoL3BhcnNlJztcbmltcG9ydCB7bWVyZ2V9IGZyb20gJy4vcGF0Y2gvbWVyZ2UnO1xuaW1wb3J0IHtzdHJ1Y3R1cmVkUGF0Y2gsIGNyZWF0ZVR3b0ZpbGVzUGF0Y2gsIGNyZWF0ZVBhdGNofSBmcm9tICcuL3BhdGNoL2NyZWF0ZSc7XG5cbmltcG9ydCB7Y29udmVydENoYW5nZXNUb0RNUH0gZnJvbSAnLi9jb252ZXJ0L2RtcCc7XG5pbXBvcnQge2NvbnZlcnRDaGFuZ2VzVG9YTUx9IGZyb20gJy4vY29udmVydC94bWwnO1xuXG5leHBvcnQge1xuICBEaWZmLFxuXG4gIGRpZmZDaGFycyxcbiAgZGlmZldvcmRzLFxuICBkaWZmV29yZHNXaXRoU3BhY2UsXG4gIGRpZmZMaW5lcyxcbiAgZGlmZlRyaW1tZWRMaW5lcyxcbiAgZGlmZlNlbnRlbmNlcyxcblxuICBkaWZmQ3NzLFxuICBkaWZmSnNvbixcblxuICBkaWZmQXJyYXlzLFxuXG4gIHN0cnVjdHVyZWRQYXRjaCxcbiAgY3JlYXRlVHdvRmlsZXNQYXRjaCxcbiAgY3JlYXRlUGF0Y2gsXG4gIGFwcGx5UGF0Y2gsXG4gIGFwcGx5UGF0Y2hlcyxcbiAgcGFyc2VQYXRjaCxcbiAgbWVyZ2UsXG4gIGNvbnZlcnRDaGFuZ2VzVG9ETVAsXG4gIGNvbnZlcnRDaGFuZ2VzVG9YTUwsXG4gIGNhbm9uaWNhbGl6ZVxufTtcbiJdfQ==
