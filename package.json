@@ -1,50 +1,63 @@
 {
-  "name": "@cspotcode/source-map-support",
-  "description": "Fixes stack traces for files with source maps",
-  "version": "0.8.1",
-  "main": "./source-map-support.js",
-  "types": "./source-map-support.d.ts",
-  "scripts": {
-    "build": "node build.js",
-    "serve-tests": "http-server -p 1336",
-    "test": "mocha"
-  },
-  "files": [
-    "/register.d.ts",
-    "/register.js",
-    "/register-hook-require.d.ts",
-    "/register-hook-require.js",
-    "/source-map-support.d.ts",
-    "/source-map-support.js",
-    "/browser-source-map-support.js"
+  "name": "@jridgewell/sourcemap-codec",
+  "version": "1.5.5",
+  "description": "Encode/decode sourcemap mappings",
+  "keywords": [
+    "sourcemap",
+    "vlq"
   ],
-  "dependencies": {
-    "@jridgewell/trace-mapping": "0.3.9"
+  "main": "dist/sourcemap-codec.umd.js",
+  "module": "dist/sourcemap-codec.mjs",
+  "types": "types/sourcemap-codec.d.cts",
+  "files": [
+    "dist",
+    "src",
+    "types"
+  ],
+  "exports": {
+    ".": [
+      {
+        "import": {
+          "types": "./types/sourcemap-codec.d.mts",
+          "default": "./dist/sourcemap-codec.mjs"
+        },
+        "default": {
+          "types": "./types/sourcemap-codec.d.cts",
+          "default": "./dist/sourcemap-codec.umd.js"
+        }
+      },
+      "./dist/sourcemap-codec.umd.js"
+    ],
+    "./package.json": "./package.json"
   },
-  "devDependencies": {
-    "@types/lodash": "^4.14.182",
-    "browserify": "^4.2.3",
-    "coffeescript": "^1.12.7",
-    "http-server": "^0.11.1",
-    "lodash": "^4.17.21",
-    "mocha": "^3.5.3",
-    "semver": "^7.3.7",
-    "source-map": "0.6.1",
-    "webpack": "^1.15.0"
+  "scripts": {
+    "benchmark": "run-s build:code benchmark:*",
+    "benchmark:install": "cd benchmark && npm install",
+    "benchmark:only": "node --expose-gc benchmark/index.js",
+    "build": "run-s -n build:code build:types",
+    "build:code": "node ../../esbuild.mjs sourcemap-codec.ts",
+    "build:types": "run-s build:types:force build:types:emit build:types:mts",
+    "build:types:force": "rimraf tsconfig.build.tsbuildinfo",
+    "build:types:emit": "tsc --project tsconfig.build.json",
+    "build:types:mts": "node ../../mts-types.mjs",
+    "clean": "run-s -n clean:code clean:types",
+    "clean:code": "tsc --build --clean tsconfig.build.json",
+    "clean:types": "rimraf dist types",
+    "test": "run-s -n test:types test:only test:format",
+    "test:format": "prettier --check '{src,test}/**/*.ts'",
+    "test:only": "mocha",
+    "test:types": "eslint '{src,test}/**/*.ts'",
+    "lint": "run-s -n lint:types lint:format",
+    "lint:format": "npm run test:format -- --write",
+    "lint:types": "npm run test:types -- --fix",
+    "prepublishOnly": "npm run-s -n build test"
   },
+  "homepage": "https://github.com/jridgewell/sourcemaps/tree/main/packages/sourcemap-codec",
   "repository": {
     "type": "git",
-    "url": "https://github.com/cspotcode/node-source-map-support"
+    "url": "git+https://github.com/jridgewell/sourcemaps.git",
+    "directory": "packages/sourcemap-codec"
   },
-  "bugs": {
-    "url": "https://github.com/cspotcode/node-source-map-support/issues"
-  },
-  "license": "MIT",
-  "engines": {
-    "node": ">=12"
-  },
-  "volta": {
-    "node": "16.11.0",
-    "npm": "7.24.2"
-  }
+  "author": "Justin Ridgewell <justin@ridgewell.name>",
+  "license": "MIT"
 }

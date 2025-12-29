@@ -1,289 +1,264 @@
-# Source Map Support
+# @jridgewell/sourcemap-codec
 
-[![NPM version](https://img.shields.io/npm/v/@cspotcode/source-map-support.svg?style=flat)](https://npmjs.org/package/@cspotcode/source-map-support)
-[![NPM downloads](https://img.shields.io/npm/dm/@cspotcode/source-map-support.svg?style=flat)](https://npmjs.org/package/@cspotcode/source-map-support)
-[![Build status](https://img.shields.io/github/workflow/status/cspotcode/node-source-map-support/Continuous%20Integration)](https://github.com/cspotcode/node-source-map-support/actions?query=workflow%3A%22Continuous+Integration%22)
+Encode/decode the `mappings` property of a [sourcemap](https://docs.google.com/document/d/1U1RGAehQwRypUTovF1KRlpiOFze0b-_2gc6fAH0KY0k/edit).
 
-This module provides source map support for stack traces in node via the [V8 stack trace API](https://github.com/v8/v8/wiki/Stack-Trace-API). It uses the [source-map](https://github.com/mozilla/source-map) module to replace the paths and line numbers of source-mapped files with their original paths and line numbers. The output mimics node's stack trace format with the goal of making every compile-to-JS language more of a first-class citizen. Source maps are completely general (not specific to any one language) so you can use source maps with multiple compile-to-JS languages in the same node process.
 
-## Installation and Usage
+## Why?
 
-#### Node support
+Sourcemaps are difficult to generate and manipulate, because the `mappings` property – the part that actually links the generated code back to the original source – is encoded using an obscure method called [Variable-length quantity](https://en.wikipedia.org/wiki/Variable-length_quantity). On top of that, each segment in the mapping contains offsets rather than absolute indices, which means that you can't look at a segment in isolation – you have to understand the whole sourcemap.
 
-```
-$ npm install @cspotcode/source-map-support
-```
+This package makes the process slightly easier.
 
-Source maps can be generated using libraries such as [source-map-index-generator](https://github.com/twolfson/source-map-index-generator). Once you have a valid source map, place a source mapping comment somewhere in the file (usually done automatically or with an option by your transpiler):
 
-```
-//# sourceMappingURL=path/to/source.map
-```
-
-If multiple sourceMappingURL comments exist in one file, the last sourceMappingURL comment will be
-respected (e.g. if a file mentions the comment in code, or went through multiple transpilers).
-The path should either be absolute or relative to the compiled file.
-
-From here you have two options.
-
-##### CLI Usage
+## Installation
 
 ```bash
-node -r @cspotcode/source-map-support/register compiled.js
-# Or to enable hookRequire
-node -r @cspotcode/source-map-support/register-hook-require compiled.js
+npm install @jridgewell/sourcemap-codec
 ```
 
-##### Programmatic Usage
 
-Put the following line at the top of the compiled file.
+## Usage
 
 ```js
-require('@cspotcode/source-map-support').install();
+import { encode, decode } from '@jridgewell/sourcemap-codec';
+
+var decoded = decode( ';EAEEA,EAAE,EAAC,CAAE;ECQY,UACC' );
+
+assert.deepEqual( decoded, [
+	// the first line (of the generated code) has no mappings,
+	// as shown by the starting semi-colon (which separates lines)
+	[],
+
+	// the second line contains four (comma-separated) segments
+	[
+		// segments are encoded as you'd expect:
+		// [ generatedCodeColumn, sourceIndex, sourceCodeLine, sourceCodeColumn, nameIndex ]
+
+		// i.e. the first segment begins at column 2, and maps back to the second column
+		// of the second line (both zero-based) of the 0th source, and uses the 0th
+		// name in the `map.names` array
+		[ 2, 0, 2, 2, 0 ],
+
+		// the remaining segments are 4-length rather than 5-length,
+		// because they don't map a name
+		[ 4, 0, 2, 4 ],
+		[ 6, 0, 2, 5 ],
+		[ 7, 0, 2, 7 ]
+	],
+
+	// the final line contains two segments
+	[
+		[ 2, 1, 10, 19 ],
+		[ 12, 1, 11, 20 ]
+	]
+]);
+
+var encoded = encode( decoded );
+assert.equal( encoded, ';EAEEA,EAAE,EAAC,CAAE;ECQY,UACC' );
 ```
 
-It is also possible to install the source map support directly by
-requiring the `register` module which can be handy with ES6:
-
-```js
-import '@cspotcode/source-map-support/register'
-
-// Instead of:
-import sourceMapSupport from '@cspotcode/source-map-support'
-sourceMapSupport.install()
-```
-Note: if you're using babel-register, it includes source-map-support already.
-
-It is also very useful with Mocha:
+## Benchmarks
 
 ```
-$ mocha --require @cspotcode/source-map-support/register tests/
+node v20.10.0
+
+amp.js.map - 45120 segments
+
+Decode Memory Usage:
+local code                             5815135 bytes
+@jridgewell/sourcemap-codec 1.4.15     5868160 bytes
+sourcemap-codec                        5492584 bytes
+source-map-0.6.1                      13569984 bytes
+source-map-0.8.0                       6390584 bytes
+chrome dev tools                       8011136 bytes
+Smallest memory usage is sourcemap-codec
+
+Decode speed:
+decode: local code x 492 ops/sec ±1.22% (90 runs sampled)
+decode: @jridgewell/sourcemap-codec 1.4.15 x 499 ops/sec ±1.16% (89 runs sampled)
+decode: sourcemap-codec x 376 ops/sec ±1.66% (89 runs sampled)
+decode: source-map-0.6.1 x 34.99 ops/sec ±0.94% (48 runs sampled)
+decode: source-map-0.8.0 x 351 ops/sec ±0.07% (95 runs sampled)
+chrome dev tools x 165 ops/sec ±0.91% (86 runs sampled)
+Fastest is decode: @jridgewell/sourcemap-codec 1.4.15
+
+Encode Memory Usage:
+local code                              444248 bytes
+@jridgewell/sourcemap-codec 1.4.15      623024 bytes
+sourcemap-codec                        8696280 bytes
+source-map-0.6.1                       8745176 bytes
+source-map-0.8.0                       8736624 bytes
+Smallest memory usage is local code
+
+Encode speed:
+encode: local code x 796 ops/sec ±0.11% (97 runs sampled)
+encode: @jridgewell/sourcemap-codec 1.4.15 x 795 ops/sec ±0.25% (98 runs sampled)
+encode: sourcemap-codec x 231 ops/sec ±0.83% (86 runs sampled)
+encode: source-map-0.6.1 x 166 ops/sec ±0.57% (86 runs sampled)
+encode: source-map-0.8.0 x 203 ops/sec ±0.45% (88 runs sampled)
+Fastest is encode: local code,encode: @jridgewell/sourcemap-codec 1.4.15
+
+
+***
+
+
+babel.min.js.map - 347793 segments
+
+Decode Memory Usage:
+local code                            35424960 bytes
+@jridgewell/sourcemap-codec 1.4.15    35424696 bytes
+sourcemap-codec                       36033464 bytes
+source-map-0.6.1                      62253704 bytes
+source-map-0.8.0                      43843920 bytes
+chrome dev tools                      45111400 bytes
+Smallest memory usage is @jridgewell/sourcemap-codec 1.4.15
+
+Decode speed:
+decode: local code x 38.18 ops/sec ±5.44% (52 runs sampled)
+decode: @jridgewell/sourcemap-codec 1.4.15 x 38.36 ops/sec ±5.02% (52 runs sampled)
+decode: sourcemap-codec x 34.05 ops/sec ±4.45% (47 runs sampled)
+decode: source-map-0.6.1 x 4.31 ops/sec ±2.76% (15 runs sampled)
+decode: source-map-0.8.0 x 55.60 ops/sec ±0.13% (73 runs sampled)
+chrome dev tools x 16.94 ops/sec ±3.78% (46 runs sampled)
+Fastest is decode: source-map-0.8.0
+
+Encode Memory Usage:
+local code                             2606016 bytes
+@jridgewell/sourcemap-codec 1.4.15     2626440 bytes
+sourcemap-codec                       21152576 bytes
+source-map-0.6.1                      25023928 bytes
+source-map-0.8.0                      25256448 bytes
+Smallest memory usage is local code
+
+Encode speed:
+encode: local code x 127 ops/sec ±0.18% (83 runs sampled)
+encode: @jridgewell/sourcemap-codec 1.4.15 x 128 ops/sec ±0.26% (83 runs sampled)
+encode: sourcemap-codec x 29.31 ops/sec ±2.55% (53 runs sampled)
+encode: source-map-0.6.1 x 18.85 ops/sec ±3.19% (36 runs sampled)
+encode: source-map-0.8.0 x 19.34 ops/sec ±1.97% (36 runs sampled)
+Fastest is encode: @jridgewell/sourcemap-codec 1.4.15
+
+
+***
+
+
+preact.js.map - 1992 segments
+
+Decode Memory Usage:
+local code                              261696 bytes
+@jridgewell/sourcemap-codec 1.4.15      244296 bytes
+sourcemap-codec                         302816 bytes
+source-map-0.6.1                        939176 bytes
+source-map-0.8.0                           336 bytes
+chrome dev tools                        587368 bytes
+Smallest memory usage is source-map-0.8.0
+
+Decode speed:
+decode: local code x 17,782 ops/sec ±0.32% (97 runs sampled)
+decode: @jridgewell/sourcemap-codec 1.4.15 x 17,863 ops/sec ±0.40% (100 runs sampled)
+decode: sourcemap-codec x 12,453 ops/sec ±0.27% (101 runs sampled)
+decode: source-map-0.6.1 x 1,288 ops/sec ±1.05% (96 runs sampled)
+decode: source-map-0.8.0 x 9,289 ops/sec ±0.27% (101 runs sampled)
+chrome dev tools x 4,769 ops/sec ±0.18% (100 runs sampled)
+Fastest is decode: @jridgewell/sourcemap-codec 1.4.15
+
+Encode Memory Usage:
+local code                              262944 bytes
+@jridgewell/sourcemap-codec 1.4.15       25544 bytes
+sourcemap-codec                         323048 bytes
+source-map-0.6.1                        507808 bytes
+source-map-0.8.0                        507480 bytes
+Smallest memory usage is @jridgewell/sourcemap-codec 1.4.15
+
+Encode speed:
+encode: local code x 24,207 ops/sec ±0.79% (95 runs sampled)
+encode: @jridgewell/sourcemap-codec 1.4.15 x 24,288 ops/sec ±0.48% (96 runs sampled)
+encode: sourcemap-codec x 6,761 ops/sec ±0.21% (100 runs sampled)
+encode: source-map-0.6.1 x 5,374 ops/sec ±0.17% (99 runs sampled)
+encode: source-map-0.8.0 x 5,633 ops/sec ±0.32% (99 runs sampled)
+Fastest is encode: @jridgewell/sourcemap-codec 1.4.15,encode: local code
+
+
+***
+
+
+react.js.map - 5726 segments
+
+Decode Memory Usage:
+local code                              678816 bytes
+@jridgewell/sourcemap-codec 1.4.15      678816 bytes
+sourcemap-codec                         816400 bytes
+source-map-0.6.1                       2288864 bytes
+source-map-0.8.0                        721360 bytes
+chrome dev tools                       1012512 bytes
+Smallest memory usage is local code
+
+Decode speed:
+decode: local code x 6,178 ops/sec ±0.19% (98 runs sampled)
+decode: @jridgewell/sourcemap-codec 1.4.15 x 6,261 ops/sec ±0.22% (100 runs sampled)
+decode: sourcemap-codec x 4,472 ops/sec ±0.90% (99 runs sampled)
+decode: source-map-0.6.1 x 449 ops/sec ±0.31% (95 runs sampled)
+decode: source-map-0.8.0 x 3,219 ops/sec ±0.13% (100 runs sampled)
+chrome dev tools x 1,743 ops/sec ±0.20% (99 runs sampled)
+Fastest is decode: @jridgewell/sourcemap-codec 1.4.15
+
+Encode Memory Usage:
+local code                              140960 bytes
+@jridgewell/sourcemap-codec 1.4.15      159808 bytes
+sourcemap-codec                         969304 bytes
+source-map-0.6.1                        930520 bytes
+source-map-0.8.0                        930248 bytes
+Smallest memory usage is local code
+
+Encode speed:
+encode: local code x 8,013 ops/sec ±0.19% (100 runs sampled)
+encode: @jridgewell/sourcemap-codec 1.4.15 x 7,989 ops/sec ±0.20% (101 runs sampled)
+encode: sourcemap-codec x 2,472 ops/sec ±0.21% (99 runs sampled)
+encode: source-map-0.6.1 x 2,200 ops/sec ±0.17% (99 runs sampled)
+encode: source-map-0.8.0 x 2,220 ops/sec ±0.37% (99 runs sampled)
+Fastest is encode: local code
+
+
+***
+
+
+vscode.map - 2141001 segments
+
+Decode Memory Usage:
+local code                           198955264 bytes
+@jridgewell/sourcemap-codec 1.4.15   199175352 bytes
+sourcemap-codec                      199102688 bytes
+source-map-0.6.1                     386323432 bytes
+source-map-0.8.0                     244116432 bytes
+chrome dev tools                     293734280 bytes
+Smallest memory usage is local code
+
+Decode speed:
+decode: local code x 3.90 ops/sec ±22.21% (15 runs sampled)
+decode: @jridgewell/sourcemap-codec 1.4.15 x 3.95 ops/sec ±23.53% (15 runs sampled)
+decode: sourcemap-codec x 3.82 ops/sec ±17.94% (14 runs sampled)
+decode: source-map-0.6.1 x 0.61 ops/sec ±7.81% (6 runs sampled)
+decode: source-map-0.8.0 x 9.54 ops/sec ±0.28% (28 runs sampled)
+chrome dev tools x 2.18 ops/sec ±10.58% (10 runs sampled)
+Fastest is decode: source-map-0.8.0
+
+Encode Memory Usage:
+local code                            13509880 bytes
+@jridgewell/sourcemap-codec 1.4.15    13537648 bytes
+sourcemap-codec                       32540104 bytes
+source-map-0.6.1                     127531040 bytes
+source-map-0.8.0                     127535312 bytes
+Smallest memory usage is local code
+
+Encode speed:
+encode: local code x 20.10 ops/sec ±0.19% (38 runs sampled)
+encode: @jridgewell/sourcemap-codec 1.4.15 x 20.26 ops/sec ±0.32% (38 runs sampled)
+encode: sourcemap-codec x 5.44 ops/sec ±1.64% (18 runs sampled)
+encode: source-map-0.6.1 x 2.30 ops/sec ±4.79% (10 runs sampled)
+encode: source-map-0.8.0 x 2.46 ops/sec ±6.53% (10 runs sampled)
+Fastest is encode: @jridgewell/sourcemap-codec 1.4.15
 ```
 
-#### Browser support
+# License
 
-This library also works in Chrome. While the DevTools console already supports source maps, the V8 engine doesn't and `Error.prototype.stack` will be incorrect without this library. Everything will just work if you deploy your source files using [browserify](http://browserify.org/). Just make sure to pass the `--debug` flag to the browserify command so your source maps are included in the bundled code.
-
-This library also works if you use another build process or just include the source files directly. In this case, include the file `browser-source-map-support.js` in your page and call `sourceMapSupport.install()`. It contains the whole library already bundled for the browser using browserify.
-
-```html
-<script src="browser-source-map-support.js"></script>
-<script>sourceMapSupport.install();</script>
-```
-
-This library also works if you use AMD (Asynchronous Module Definition), which is used in tools like [RequireJS](http://requirejs.org/). Just list `browser-source-map-support` as a dependency:
-
-```html
-<script>
-  define(['browser-source-map-support'], function(sourceMapSupport) {
-    sourceMapSupport.install();
-  });
-</script>
-```
-
-## Options
-
-This module installs two things: a change to the `stack` property on `Error` objects and a handler for uncaught exceptions that mimics node's default exception handler (the handler can be seen in the demos below). You may want to disable the handler if you have your own uncaught exception handler. This can be done by passing an argument to the installer:
-
-```js
-require('@cspotcode/source-map-support').install({
-  handleUncaughtExceptions: false
-});
-```
-
-This module loads source maps from the filesystem by default. You can provide alternate loading behavior through a callback as shown below. For example, [Meteor](https://github.com/meteor) keeps all source maps cached in memory to avoid disk access.
-
-```js
-require('@cspotcode/source-map-support').install({
-  retrieveSourceMap: function(source) {
-    if (source === 'compiled.js') {
-      return {
-        url: 'original.js',
-        map: fs.readFileSync('compiled.js.map', 'utf8')
-      };
-    }
-    return null;
-  }
-});
-```
-
-The module will by default assume a browser environment if XMLHttpRequest and window are defined. If either of these do not exist it will instead assume a node environment.
-In some rare cases, e.g. when running a browser emulation and where both variables are also set, you can explictly specify the environment to be either 'browser' or 'node'.
-
-```js
-require('@cspotcode/source-map-support').install({
-  environment: 'node'
-});
-```
-
-To support files with inline source maps, the `hookRequire` options can be specified, which will monitor all source files for inline source maps.
-
-
-```js
-require('@cspotcode/source-map-support').install({
-  hookRequire: true
-});
-```
-
-This monkey patches the `require` module loading chain, so is not enabled by default and is not recommended for any sort of production usage.
-
-## Demos
-
-#### Basic Demo
-
-original.js:
-
-```js
-throw new Error('test'); // This is the original code
-```
-
-compiled.js:
-
-```js
-require('@cspotcode/source-map-support').install();
-
-throw new Error('test'); // This is the compiled code
-// The next line defines the sourceMapping.
-//# sourceMappingURL=compiled.js.map
-```
-
-compiled.js.map:
-
-```json
-{
-  "version": 3,
-  "file": "compiled.js",
-  "sources": ["original.js"],
-  "names": [],
-  "mappings": ";;AAAA,MAAM,IAAI"
-}
-```
-
-Run compiled.js using node (notice how the stack trace uses original.js instead of compiled.js):
-
-```
-$ node compiled.js
-
-original.js:1
-throw new Error('test'); // This is the original code
-      ^
-Error: test
-    at Object.<anonymous> (original.js:1:7)
-    at Module._compile (module.js:456:26)
-    at Object.Module._extensions..js (module.js:474:10)
-    at Module.load (module.js:356:32)
-    at Function.Module._load (module.js:312:12)
-    at Function.Module.runMain (module.js:497:10)
-    at startup (node.js:119:16)
-    at node.js:901:3
-```
-
-#### TypeScript Demo
-
-demo.ts:
-
-```typescript
-declare function require(name: string);
-require('@cspotcode/source-map-support').install();
-class Foo {
-  constructor() { this.bar(); }
-  bar() { throw new Error('this is a demo'); }
-}
-new Foo();
-```
-
-Compile and run the file using the TypeScript compiler from the terminal:
-
-```
-$ npm install source-map-support typescript
-$ node_modules/typescript/bin/tsc -sourcemap demo.ts
-$ node demo.js
-
-demo.ts:5
-  bar() { throw new Error('this is a demo'); }
-                ^
-Error: this is a demo
-    at Foo.bar (demo.ts:5:17)
-    at new Foo (demo.ts:4:24)
-    at Object.<anonymous> (demo.ts:7:1)
-    at Module._compile (module.js:456:26)
-    at Object.Module._extensions..js (module.js:474:10)
-    at Module.load (module.js:356:32)
-    at Function.Module._load (module.js:312:12)
-    at Function.Module.runMain (module.js:497:10)
-    at startup (node.js:119:16)
-    at node.js:901:3
-```
-
-There is also the option to use `-r source-map-support/register` with typescript, without the need add the `require('@cspotcode/source-map-support').install()` in the code base:
-
-```
-$ npm install source-map-support typescript
-$ node_modules/typescript/bin/tsc  -sourcemap demo.ts
-$ node -r source-map-support/register demo.js
-
-demo.ts:5
-  bar() { throw new Error('this is a demo'); }
-                ^
-Error: this is a demo
-    at Foo.bar (demo.ts:5:17)
-    at new Foo (demo.ts:4:24)
-    at Object.<anonymous> (demo.ts:7:1)
-    at Module._compile (module.js:456:26)
-    at Object.Module._extensions..js (module.js:474:10)
-    at Module.load (module.js:356:32)
-    at Function.Module._load (module.js:312:12)
-    at Function.Module.runMain (module.js:497:10)
-    at startup (node.js:119:16)
-    at node.js:901:3
-```
-
-#### CoffeeScript Demo
-
-demo.coffee:
-
-```coffee
-require('@cspotcode/source-map-support').install()
-foo = ->
-  bar = -> throw new Error 'this is a demo'
-  bar()
-foo()
-```
-
-Compile and run the file using the CoffeeScript compiler from the terminal:
-
-```sh
-$ npm install @cspotcode/source-map-support coffeescript
-$ node_modules/.bin/coffee --map --compile demo.coffee
-$ node demo.js
-
-demo.coffee:3
-  bar = -> throw new Error 'this is a demo'
-                     ^
-Error: this is a demo
-    at bar (demo.coffee:3:22)
-    at foo (demo.coffee:4:3)
-    at Object.<anonymous> (demo.coffee:5:1)
-    at Object.<anonymous> (demo.coffee:1:1)
-    at Module._compile (module.js:456:26)
-    at Object.Module._extensions..js (module.js:474:10)
-    at Module.load (module.js:356:32)
-    at Function.Module._load (module.js:312:12)
-    at Function.Module.runMain (module.js:497:10)
-    at startup (node.js:119:16)
-```
-
-## Tests
-
-This repo contains both automated tests for node and manual tests for the browser. The automated tests can be run using mocha (type `mocha` in the root directory). To run the manual tests:
-
-* Build the tests using `build.js`
-* Launch the HTTP server (`npm run serve-tests`) and visit
-  * http://127.0.0.1:1336/amd-test
-  * http://127.0.0.1:1336/browser-test
-  * http://127.0.0.1:1336/browserify-test - **Currently not working** due to a bug with browserify (see [pull request #66](https://github.com/evanw/node-source-map-support/pull/66) for details).
-* For `header-test`, run `server.js` inside that directory and visit http://127.0.0.1:1337/
-
-## License
-
-This code is available under the [MIT license](http://opensource.org/licenses/MIT).
+MIT
