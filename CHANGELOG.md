@@ -1,199 +1,30 @@
-## 8.3.4 (2024-09-09)
+# Changelog
 
-### Bug fixes
+All notable changes to this project will be documented in this file.
 
-Walk SwitchCase nodes as separate nodes.
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## 8.3.3 (2024-01-11)
+## [v1.0.2](https://github.com/ljharb/call-bind-apply-helpers/compare/v1.0.1...v1.0.2) - 2025-02-12
 
-### Bug fixes
+### Commits
 
-Make acorn a dependency because acorn-walk uses the types from that package.
+- [types] improve inferred types [`e6f9586`](https://github.com/ljharb/call-bind-apply-helpers/commit/e6f95860a3c72879cb861a858cdfb8138fbedec1)
+- [Dev Deps] update `@arethetypeswrong/cli`, `@ljharb/tsconfig`, `@types/tape`, `es-value-fixtures`, `for-each`, `has-strict-mode`, `object-inspect` [`e43d540`](https://github.com/ljharb/call-bind-apply-helpers/commit/e43d5409f97543bfbb11f345d47d8ce4e066d8c1)
 
-## 8.3.2 (2024-01-11)
+## [v1.0.1](https://github.com/ljharb/call-bind-apply-helpers/compare/v1.0.0...v1.0.1) - 2024-12-08
 
-### Bug fixes
+### Commits
 
-Add missing type for `findNodeBefore`.
+- [types] `reflectApply`: fix types [`4efc396`](https://github.com/ljharb/call-bind-apply-helpers/commit/4efc3965351a4f02cc55e836fa391d3d11ef2ef8)
+- [Fix] `reflectApply`: oops, Reflect is not a function [`83cc739`](https://github.com/ljharb/call-bind-apply-helpers/commit/83cc7395de6b79b7730bdf092f1436f0b1263c75)
+- [Dev Deps] update `@arethetypeswrong/cli` [`80bd5d3`](https://github.com/ljharb/call-bind-apply-helpers/commit/80bd5d3ae58b4f6b6995ce439dd5a1bcb178a940)
 
-## 8.3.1 (2023-12-06)
+## v1.0.0 - 2024-12-05
 
-### Bug fixes
+### Commits
 
-Add `Function` and `Class` to the `AggregateType` type, so that they can be used in walkers without raising a type error.
-
-Visitor functions are now called in such a way that their `this` refers to the object they are part of.
-
-## 8.3.0 (2023-10-26)
-
-### New features
-
-Use a set of new, much more precise, TypeScript types.
-
-## 8.2.0 (2021-09-06)
-
-### New features
-
-Add support for walking ES2022 class static blocks.
-
-## 8.1.1 (2021-06-29)
-
-### Bug fixes
-
-Include `base` in the type declarations.
-
-## 8.1.0 (2021-04-24)
-
-### New features
-
-Support node types for class fields and private methods.
-
-## 8.0.2 (2021-01-25)
-
-### Bug fixes
-
-Adjust package.json to work with Node 12.16.0 and 13.0-13.6.
-
-## 8.0.0 (2021-01-05)
-
-### Bug fixes
-
-Fix a bug where `full` and `fullAncestor` would skip nodes with overridden types.
-
-## 8.0.0 (2020-08-12)
-
-### New features
-
-The package can now be loaded directly as an ECMAScript module in node 13+.
-
-## 7.2.0 (2020-06-17)
-
-### New features
-
-Support optional chaining and nullish coalescing.
-
-Support `import.meta`.
-
-Add support for `export * as ns from "source"`.
-
-## 7.1.1 (2020-02-13)
-
-### Bug fixes
-
-Clean up the type definitions to actually work well with the main parser.
-
-## 7.1.0 (2020-02-11)
-
-### New features
-
-Add a TypeScript definition file for the library.
-
-## 7.0.0 (2017-08-12)
-
-### New features
-
-Support walking `ImportExpression` nodes.
-
-## 6.2.0 (2017-07-04)
-
-### New features
-
-Add support for `Import` nodes.
-
-## 6.1.0 (2018-09-28)
-
-### New features
-
-The walker now walks `TemplateElement` nodes.
-
-## 6.0.1 (2018-09-14)
-
-### Bug fixes
-
-Fix bad "main" field in package.json.
-
-## 6.0.0 (2018-09-14)
-
-### Breaking changes
-
-This is now a separate package, `acorn-walk`, rather than part of the main `acorn` package.
-
-The `ScopeBody` and `ScopeExpression` meta-node-types are no longer supported.
-
-## 5.7.1 (2018-06-15)
-
-### Bug fixes
-
-Make sure the walker and bin files are rebuilt on release (the previous release didn't get the up-to-date versions).
-
-## 5.7.0 (2018-06-15)
-
-### Bug fixes
-
-Fix crash in walker when walking a binding-less catch node.
-
-## 5.6.2 (2018-06-05)
-
-### Bug fixes
-
-In the walker, go back to allowing the `baseVisitor` argument to be null to default to the default base everywhere.
-
-## 5.6.1 (2018-06-01)
-
-### Bug fixes
-
-Fix regression when passing `null` as fourth argument to `walk.recursive`.
-
-## 5.6.0 (2018-05-31)
-
-### Bug fixes
-
-Fix a bug in the walker that caused a crash when walking an object pattern spread.
-
-## 5.5.1 (2018-03-06)
-
-### Bug fixes
-
-Fix regression in walker causing property values in object patterns to be walked as expressions.
-
-## 5.5.0 (2018-02-27)
-
-### Bug fixes
-
-Support object spread in the AST walker.
-
-## 5.4.1 (2018-02-02)
-
-### Bug fixes
-
-5.4.0 somehow accidentally included an old version of walk.js.
-
-## 5.2.0 (2017-10-30)
-
-### Bug fixes
-
-The `full` and `fullAncestor` walkers no longer visit nodes multiple times.
-
-## 5.1.0 (2017-07-05)
-
-### New features
-
-New walker functions `full` and `fullAncestor`.
-
-## 3.2.0 (2016-06-07)
-
-### New features
-
-Make it possible to use `visit.ancestor` with a walk state.
-
-## 3.1.0 (2016-04-18)
-
-### New features
-
-The walker now allows defining handlers for `CatchClause` nodes.
-
-## 2.5.2 (2015-10-27)
-
-### Fixes
-
-Fix bug where the walker walked an exported `let` statement as an expression.
+- Initial implementation, tests, readme [`7879629`](https://github.com/ljharb/call-bind-apply-helpers/commit/78796290f9b7430c9934d6f33d94ae9bc89fce04)
+- Initial commit [`3f1dc16`](https://github.com/ljharb/call-bind-apply-helpers/commit/3f1dc164afc43285631b114a5f9dd9137b2b952f)
+- npm init [`081df04`](https://github.com/ljharb/call-bind-apply-helpers/commit/081df048c312fcee400922026f6e97281200a603)
+- Only apps should have lockfiles [`5b9ca0f`](https://github.com/ljharb/call-bind-apply-helpers/commit/5b9ca0fe8101ebfaf309c549caac4e0a017ed930)
