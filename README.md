@@ -1,203 +1,133 @@
-# negotiator
+# parseurl
 
-[![NPM Version][npm-image]][npm-url]
-[![NPM Downloads][downloads-image]][downloads-url]
-[![Node.js Version][node-version-image]][node-version-url]
-[![Build Status][github-actions-ci-image]][github-actions-ci-url]
+[![NPM Version][npm-version-image]][npm-url]
+[![NPM Downloads][npm-downloads-image]][npm-url]
+[![Node.js Version][node-image]][node-url]
+[![Build Status][travis-image]][travis-url]
 [![Test Coverage][coveralls-image]][coveralls-url]
 
-An HTTP content negotiator for Node.js
+Parse a URL with memoization.
 
-## Installation
+## Install
+
+This is a [Node.js](https://nodejs.org/en/) module available through the
+[npm registry](https://www.npmjs.com/). Installation is done using the
+[`npm install` command](https://docs.npmjs.com/getting-started/installing-npm-packages-locally):
 
 ```sh
-$ npm install negotiator
+$ npm install parseurl
 ```
 
 ## API
 
 ```js
-var Negotiator = require('negotiator')
+var parseurl = require('parseurl')
 ```
 
-### Accept Negotiation
+### parseurl(req)
 
-```js
-availableMediaTypes = ['text/html', 'text/plain', 'application/json']
+Parse the URL of the given request object (looks at the `req.url` property)
+and return the result. The result is the same as `url.parse` in Node.js core.
+Calling this function multiple times on the same `req` where `req.url` does
+not change will return a cached parsed object, rather than parsing again.
 
-// The negotiator constructor receives a request object
-negotiator = new Negotiator(request)
+### parseurl.original(req)
 
-// Let's say Accept header is 'text/html, application/*;q=0.2, image/jpeg;q=0.8'
+Parse the original URL of the given request object and return the result.
+This works by trying to parse `req.originalUrl` if it is a string, otherwise
+parses `req.url`. The result is the same as `url.parse` in Node.js core.
+Calling this function multiple times on the same `req` where `req.originalUrl`
+does not change will return a cached parsed object, rather than parsing again.
 
-negotiator.mediaTypes()
-// -> ['text/html', 'image/jpeg', 'application/*']
+## Benchmark
 
-negotiator.mediaTypes(availableMediaTypes)
-// -> ['text/html', 'application/json']
+```bash
+$ npm run-script bench
 
-negotiator.mediaType(availableMediaTypes)
-// -> 'text/html'
+> parseurl@1.3.3 bench nodejs-parseurl
+> node benchmark/index.js
+
+  http_parser@2.8.0
+  node@10.6.0
+  v8@6.7.288.46-node.13
+  uv@1.21.0
+  zlib@1.2.11
+  ares@1.14.0
+  modules@64
+  nghttp2@1.32.0
+  napi@3
+  openssl@1.1.0h
+  icu@61.1
+  unicode@10.0
+  cldr@33.0
+  tz@2018c
+
+> node benchmark/fullurl.js
+
+  Parsing URL "http://localhost:8888/foo/bar?user=tj&pet=fluffy"
+
+  4 tests completed.
+
+  fasturl            x 2,207,842 ops/sec ±3.76% (184 runs sampled)
+  nativeurl - legacy x   507,180 ops/sec ±0.82% (191 runs sampled)
+  nativeurl - whatwg x   290,044 ops/sec ±1.96% (189 runs sampled)
+  parseurl           x   488,907 ops/sec ±2.13% (192 runs sampled)
+
+> node benchmark/pathquery.js
+
+  Parsing URL "/foo/bar?user=tj&pet=fluffy"
+
+  4 tests completed.
+
+  fasturl            x 3,812,564 ops/sec ±3.15% (188 runs sampled)
+  nativeurl - legacy x 2,651,631 ops/sec ±1.68% (189 runs sampled)
+  nativeurl - whatwg x   161,837 ops/sec ±2.26% (189 runs sampled)
+  parseurl           x 4,166,338 ops/sec ±2.23% (184 runs sampled)
+
+> node benchmark/samerequest.js
+
+  Parsing URL "/foo/bar?user=tj&pet=fluffy" on same request object
+
+  4 tests completed.
+
+  fasturl            x  3,821,651 ops/sec ±2.42% (185 runs sampled)
+  nativeurl - legacy x  2,651,162 ops/sec ±1.90% (187 runs sampled)
+  nativeurl - whatwg x    175,166 ops/sec ±1.44% (188 runs sampled)
+  parseurl           x 14,912,606 ops/sec ±3.59% (183 runs sampled)
+
+> node benchmark/simplepath.js
+
+  Parsing URL "/foo/bar"
+
+  4 tests completed.
+
+  fasturl            x 12,421,765 ops/sec ±2.04% (191 runs sampled)
+  nativeurl - legacy x  7,546,036 ops/sec ±1.41% (188 runs sampled)
+  nativeurl - whatwg x    198,843 ops/sec ±1.83% (189 runs sampled)
+  parseurl           x 24,244,006 ops/sec ±0.51% (194 runs sampled)
+
+> node benchmark/slash.js
+
+  Parsing URL "/"
+
+  4 tests completed.
+
+  fasturl            x 17,159,456 ops/sec ±3.25% (188 runs sampled)
+  nativeurl - legacy x 11,635,097 ops/sec ±3.79% (184 runs sampled)
+  nativeurl - whatwg x    240,693 ops/sec ±0.83% (189 runs sampled)
+  parseurl           x 42,279,067 ops/sec ±0.55% (190 runs sampled)
 ```
-
-You can check a working example at `examples/accept.js`.
-
-#### Methods
-
-##### mediaType()
-
-Returns the most preferred media type from the client.
-
-##### mediaType(availableMediaType)
-
-Returns the most preferred media type from a list of available media types.
-
-##### mediaTypes()
-
-Returns an array of preferred media types ordered by the client preference.
-
-##### mediaTypes(availableMediaTypes)
-
-Returns an array of preferred media types ordered by priority from a list of
-available media types.
-
-### Accept-Language Negotiation
-
-```js
-negotiator = new Negotiator(request)
-
-availableLanguages = ['en', 'es', 'fr']
-
-// Let's say Accept-Language header is 'en;q=0.8, es, pt'
-
-negotiator.languages()
-// -> ['es', 'pt', 'en']
-
-negotiator.languages(availableLanguages)
-// -> ['es', 'en']
-
-language = negotiator.language(availableLanguages)
-// -> 'es'
-```
-
-You can check a working example at `examples/language.js`.
-
-#### Methods
-
-##### language()
-
-Returns the most preferred language from the client.
-
-##### language(availableLanguages)
-
-Returns the most preferred language from a list of available languages.
-
-##### languages()
-
-Returns an array of preferred languages ordered by the client preference.
-
-##### languages(availableLanguages)
-
-Returns an array of preferred languages ordered by priority from a list of
-available languages.
-
-### Accept-Charset Negotiation
-
-```js
-availableCharsets = ['utf-8', 'iso-8859-1', 'iso-8859-5']
-
-negotiator = new Negotiator(request)
-
-// Let's say Accept-Charset header is 'utf-8, iso-8859-1;q=0.8, utf-7;q=0.2'
-
-negotiator.charsets()
-// -> ['utf-8', 'iso-8859-1', 'utf-7']
-
-negotiator.charsets(availableCharsets)
-// -> ['utf-8', 'iso-8859-1']
-
-negotiator.charset(availableCharsets)
-// -> 'utf-8'
-```
-
-You can check a working example at `examples/charset.js`.
-
-#### Methods
-
-##### charset()
-
-Returns the most preferred charset from the client.
-
-##### charset(availableCharsets)
-
-Returns the most preferred charset from a list of available charsets.
-
-##### charsets()
-
-Returns an array of preferred charsets ordered by the client preference.
-
-##### charsets(availableCharsets)
-
-Returns an array of preferred charsets ordered by priority from a list of
-available charsets.
-
-### Accept-Encoding Negotiation
-
-```js
-availableEncodings = ['identity', 'gzip']
-
-negotiator = new Negotiator(request)
-
-// Let's say Accept-Encoding header is 'gzip, compress;q=0.2, identity;q=0.5'
-
-negotiator.encodings()
-// -> ['gzip', 'identity', 'compress']
-
-negotiator.encodings(availableEncodings)
-// -> ['gzip', 'identity']
-
-negotiator.encoding(availableEncodings)
-// -> 'gzip'
-```
-
-You can check a working example at `examples/encoding.js`.
-
-#### Methods
-
-##### encoding()
-
-Returns the most preferred encoding from the client.
-
-##### encoding(availableEncodings)
-
-Returns the most preferred encoding from a list of available encodings.
-
-##### encodings()
-
-Returns an array of preferred encodings ordered by the client preference.
-
-##### encodings(availableEncodings)
-
-Returns an array of preferred encodings ordered by priority from a list of
-available encodings.
-
-## See Also
-
-The [accepts](https://npmjs.org/package/accepts#readme) module builds on
-this module and provides an alternative interface, mime type validation,
-and more.
 
 ## License
 
-[MIT](LICENSE)
+  [MIT](LICENSE)
 
-[npm-image]: https://img.shields.io/npm/v/negotiator.svg
-[npm-url]: https://npmjs.org/package/negotiator
-[node-version-image]: https://img.shields.io/node/v/negotiator.svg
-[node-version-url]: https://nodejs.org/en/download/
-[coveralls-image]: https://img.shields.io/coveralls/jshttp/negotiator/master.svg
-[coveralls-url]: https://coveralls.io/r/jshttp/negotiator?branch=master
-[downloads-image]: https://img.shields.io/npm/dm/negotiator.svg
-[downloads-url]: https://npmjs.org/package/negotiator
-[github-actions-ci-image]: https://img.shields.io/github/workflow/status/jshttp/negotiator/ci/master?label=ci
-[github-actions-ci-url]: https://github.com/jshttp/negotiator/actions/workflows/ci.yml
+[coveralls-image]: https://badgen.net/coveralls/c/github/pillarjs/parseurl/master
+[coveralls-url]: https://coveralls.io/r/pillarjs/parseurl?branch=master
+[node-image]: https://badgen.net/npm/node/parseurl
+[node-url]: https://nodejs.org/en/download
+[npm-downloads-image]: https://badgen.net/npm/dm/parseurl
+[npm-url]: https://npmjs.org/package/parseurl
+[npm-version-image]: https://badgen.net/npm/v/parseurl
+[travis-image]: https://badgen.net/travis/pillarjs/parseurl/master
+[travis-url]: https://travis-ci.org/pillarjs/parseurl
