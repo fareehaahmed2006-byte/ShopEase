@@ -1,11 +1,7 @@
-'use strict';
-
-var stringify = require('./stringify');
-var parse = require('./parse');
-var formats = require('./formats');
+'use strict'
 
 module.exports = {
-    formats: formats,
-    parse: parse,
-    stringify: stringify
-};
+  SemVer: require('./semver.js'),
+  Range: require('./range.js'),
+  Comparator: require('./comparator.js'),
+}
