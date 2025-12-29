@@ -1,62 +1,61 @@
-# side-channel-list <sup>[![Version Badge][npm-version-svg]][package-url]</sup>
+# toidentifier
 
-[![github actions][actions-image]][actions-url]
-[![coverage][codecov-image]][codecov-url]
-[![License][license-image]][license-url]
-[![Downloads][downloads-image]][downloads-url]
+[![NPM Version][npm-image]][npm-url]
+[![NPM Downloads][downloads-image]][downloads-url]
+[![Build Status][github-actions-ci-image]][github-actions-ci-url]
+[![Test Coverage][codecov-image]][codecov-url]
 
-[![npm badge][npm-badge-png]][package-url]
+> Convert a string of words to a JavaScript identifier
 
-Store information about any JS value in a side channel, using a linked list.
+## Install
 
-Warning: this implementation will leak memory until you `delete` the `key`.
-Use [`side-channel`](https://npmjs.com/side-channel) for the best available strategy.
+This is a [Node.js](https://nodejs.org/en/) module available through the
+[npm registry](https://www.npmjs.com/). Installation is done using the
+[`npm install` command](https://docs.npmjs.com/getting-started/installing-npm-packages-locally):
 
-## Getting started
-
-```sh
-npm install --save side-channel-list
+```bash
+$ npm install toidentifier
 ```
 
-## Usage/Examples
+## Example
 
 ```js
-const assert = require('assert');
-const getSideChannelList = require('side-channel-list');
+var toIdentifier = require('toidentifier')
 
-const channel = getSideChannelList();
-
-const key = {};
-assert.equal(channel.has(key), false);
-assert.throws(() => channel.assert(key), TypeError);
-
-channel.set(key, 42);
-
-channel.assert(key); // does not throw
-assert.equal(channel.has(key), true);
-assert.equal(channel.get(key), 42);
-
-channel.delete(key);
-assert.equal(channel.has(key), false);
-assert.throws(() => channel.assert(key), TypeError);
+console.log(toIdentifier('Bad Request'))
+// => "BadRequest"
 ```
 
-## Tests
+## API
 
-Clone the repo, `npm install`, and run `npm test`
+This CommonJS module exports a single default function: `toIdentifier`.
 
-[package-url]: https://npmjs.org/package/side-channel-list
-[npm-version-svg]: https://versionbadg.es/ljharb/side-channel-list.svg
-[deps-svg]: https://david-dm.org/ljharb/side-channel-list.svg
-[deps-url]: https://david-dm.org/ljharb/side-channel-list
-[dev-deps-svg]: https://david-dm.org/ljharb/side-channel-list/dev-status.svg
-[dev-deps-url]: https://david-dm.org/ljharb/side-channel-list#info=devDependencies
-[npm-badge-png]: https://nodei.co/npm/side-channel-list.png?downloads=true&stars=true
-[license-image]: https://img.shields.io/npm/l/side-channel-list.svg
-[license-url]: LICENSE
-[downloads-image]: https://img.shields.io/npm/dm/side-channel-list.svg
-[downloads-url]: https://npm-stat.com/charts.html?package=side-channel-list
-[codecov-image]: https://codecov.io/gh/ljharb/side-channel-list/branch/main/graphs/badge.svg
-[codecov-url]: https://app.codecov.io/gh/ljharb/side-channel-list/
-[actions-image]: https://img.shields.io/endpoint?url=https://github-actions-badge-u3jn4tfpocch.runkit.sh/ljharb/side-channel-list
-[actions-url]: https://github.com/ljharb/side-channel-list/actions
+### toIdentifier(string)
+
+Given a string as the argument, it will be transformed according to
+the following rules and the new string will be returned:
+
+1. Split into words separated by space characters (`0x20`).
+2. Upper case the first character of each word.
+3. Join the words together with no separator.
+4. Remove all non-word (`[0-9a-z_]`) characters.
+
+## License
+
+[MIT](LICENSE)
+
+[codecov-image]: https://img.shields.io/codecov/c/github/component/toidentifier.svg
+[codecov-url]: https://codecov.io/gh/component/toidentifier
+[downloads-image]: https://img.shields.io/npm/dm/toidentifier.svg
+[downloads-url]: https://npmjs.org/package/toidentifier
+[github-actions-ci-image]: https://img.shields.io/github/workflow/status/component/toidentifier/ci/master?label=ci
+[github-actions-ci-url]: https://github.com/component/toidentifier?query=workflow%3Aci
+[npm-image]: https://img.shields.io/npm/v/toidentifier.svg
+[npm-url]: https://npmjs.org/package/toidentifier
+
+
+##
+
+[npm]: https://www.npmjs.com/
+
+[yarn]: https://yarnpkg.com/
