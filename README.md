@@ -1,53 +1,46 @@
-# call-bound <sup>[![Version Badge][npm-version-svg]][package-url]</sup>
+# `create-require`
 
-[![github actions][actions-image]][actions-url]
-[![coverage][codecov-image]][codecov-url]
-[![dependency status][deps-svg]][deps-url]
-[![dev dependency status][dev-deps-svg]][dev-deps-url]
-[![License][license-image]][license-url]
-[![Downloads][downloads-image]][downloads-url]
+[![npm version][npm-version-src]][npm-version-href]
+[![npm downloads][npm-downloads-src]][npm-downloads-href]
+[![Github Actions][github-actions-src]][github-actions-href]
+[![Codecov][codecov-src]][codecov-href]
 
-[![npm badge][npm-badge-png]][package-url]
+Polyfill for Node.js [`module.createRequire`](https://nodejs.org/api/modules.html#modules_module_createrequire_filename) (<= v12.2.0)
 
-Robust call-bound JavaScript intrinsics, using `call-bind` and `get-intrinsic`.
-
-## Getting started
+## Install
 
 ```sh
-npm install --save call-bound
+yarn add create-require
+
+npm install create-require
 ```
 
-## Usage/Examples
+## Usage
+
+```ts
+function createRequire (filename: string | URL): NodeRequire;
+```
 
 ```js
-const assert = require('assert');
-const callBound = require('call-bound');
+const createRequire = require('create-require')
 
-const slice = callBound('Array.prototype.slice');
-
-delete Function.prototype.call;
-delete Function.prototype.bind;
-delete Array.prototype.slice;
-
-assert.deepEqual(slice([1, 2, 3, 4], 1, -1), [2, 3]);
+const myRequire = createRequire('path/to/test.js')
+const myModule = myRequire('./test-sibling-module')
 ```
 
-## Tests
+## License
 
-Clone the repo, `npm install`, and run `npm test`
+[MIT](./LICENSE)
 
-[package-url]: https://npmjs.org/package/call-bound
-[npm-version-svg]: https://versionbadg.es/ljharb/call-bound.svg
-[deps-svg]: https://david-dm.org/ljharb/call-bound.svg
-[deps-url]: https://david-dm.org/ljharb/call-bound
-[dev-deps-svg]: https://david-dm.org/ljharb/call-bound/dev-status.svg
-[dev-deps-url]: https://david-dm.org/ljharb/call-bound#info=devDependencies
-[npm-badge-png]: https://nodei.co/npm/call-bound.png?downloads=true&stars=true
-[license-image]: https://img.shields.io/npm/l/call-bound.svg
-[license-url]: LICENSE
-[downloads-image]: https://img.shields.io/npm/dm/call-bound.svg
-[downloads-url]: https://npm-stat.com/charts.html?package=call-bound
-[codecov-image]: https://codecov.io/gh/ljharb/call-bound/branch/main/graphs/badge.svg
-[codecov-url]: https://app.codecov.io/gh/ljharb/call-bound/
-[actions-image]: https://img.shields.io/endpoint?url=https://github-actions-badge-u3jn4tfpocch.runkit.sh/ljharb/call-bound
-[actions-url]: https://github.com/ljharb/call-bound/actions
+<!-- Badges -->
+[npm-version-src]: https://img.shields.io/npm/v/create-require?style=flat-square
+[npm-version-href]: https://npmjs.com/package/create-require
+
+[npm-downloads-src]: https://img.shields.io/npm/dm/create-require?style=flat-square
+[npm-downloads-href]: https://npmjs.com/package/create-require
+
+[github-actions-src]: https://img.shields.io/github/workflow/status/nuxt-contrib/create-require/test/master?style=flat-square
+[github-actions-href]: https://github.com/nuxt-contrib/create-require/actions?query=workflow%3Atest
+
+[codecov-src]: https://img.shields.io/codecov/c/gh/nuxt-contrib/create-require/master?style=flat-square
+[codecov-href]: https://codecov.io/gh/nuxt-contrib/create-require
