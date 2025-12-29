@@ -1,0 +1,1 @@
+import { loginService } from '../services/auth.service';export const login=async(req:any,res:any)=>{const t=await loginService(req.body.email,req.body.password);if(!t)return res.status(401).json({msg:'Invalid'});res.json({token:t});};

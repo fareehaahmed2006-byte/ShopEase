@@ -1,0 +1,1 @@
+import { prisma } from '../config/database';export const checkoutService=async(u:number)=>{const items=await prisma.cart.findMany({where:{userId:u},include:{product:true}});let t=0;items.forEach(i=>t+=i.product.price*i.quantity);return prisma.order.create({data:{userId:u,total:t}});};

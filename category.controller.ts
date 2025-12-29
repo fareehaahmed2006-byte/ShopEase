@@ -1,0 +1,1 @@
+import { getCategories } from '../services/category.service';export const list=async(_:any,res:any)=>res.json(await getCategories());

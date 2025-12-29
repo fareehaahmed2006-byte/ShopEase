@@ -1,0 +1,1 @@
+import jwt from 'jsonwebtoken';import { prisma } from '../config/database';export const loginService=async(e:string,p:string)=>{const u=await prisma.user.findFirst({where:{email:e,password:p}});if(!u)return null;return jwt.sign({id:u.id},'SECRET');};

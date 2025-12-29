@@ -1,0 +1,1 @@
+import { prisma } from '../config/database';export const getCategories=()=>prisma.category.findMany();
