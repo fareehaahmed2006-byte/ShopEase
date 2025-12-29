@@ -1,5 +1,8 @@
 'use strict';
 
-var implementation = require('./implementation');
+var call = Function.prototype.call;
+var $hasOwn = Object.prototype.hasOwnProperty;
+var bind = require('function-bind');
 
-module.exports = Function.prototype.bind || implementation;
+/** @type {import('.')} */
+module.exports = bind.call(call, $hasOwn);
